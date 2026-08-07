@@ -1,0 +1,400 @@
+---
+import Base from '../layouts/Base.astro';
+import Wave from '../components/Wave.astro';
+import CarCard from '../components/CarCard.astro';
+import data from '../data/vehicules.json';
+
+const WA = 'https://wa.me/66806853817';
+const waText = encodeURIComponent('Bonjour Caribian Rental ! Je souhaite louer un véhicule à Koh Samui.');
+
+// Sélection mise en avant sur l'accueil
+const featured = ['navy-blue', 'goldorak', 'ecosport', 'crv', 'ranger'];
+const cars = featured
+  .map((slug) => data.voitures.find((v) => v.slug === slug))
+  .filter((v) => v !== undefined);
+const xmax = data.scooters.find((s) => s.slug === 'xmax-300');
+
+const marquee = [
+  'Navy Blue', 'Goldorak', 'Miss Pompom', 'Snow White', 'Lady Jade',
+  'Green Star', 'Big Red One', 'dès 250 ฿/jour', '★ 4,9 sur Google',
+];
+---
+<Base
+  title="Caribian Rental Samui — Location de voitures et scooters à Koh Samui"
+  description="Caribian mythiques, SUV et scooters entretenus et livrés à votre hôtel partout sur Koh Samui. Assurance incluse, acompte 1 000 THB, note Google 4,9."
+  path="/"
+>
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="top">
+    <div class="bg"></div>
+    <div class="veil"></div>
+    <div class="hero-in">
+      <span class="kick"><span class="st">★ 4,9</span> sur Google · loueur local à Koh Samui</span>
+      <h1>
+        <span class="w" style="--wd:.15s">L'île</span>
+        <span class="w" style="--wd:.3s">est</span>
+        <span class="w" style="--wd:.45s">à</span>
+        <span class="w hl" style="--wd:.6s">vous.</span>
+      </h1>
+      <p class="sub">
+        Caribian mythiques, SUV et scooters entretenus par nos soins,
+        livrés à votre hôtel partout sur Koh Samui.
+      </p>
+      <div class="book">
+        <a class="f" href={`${WA}?text=${waText}`} target="_blank" rel="noopener">
+          <small>Départ</small><span class="v">Vos dates</span>
+        </a>
+        <a class="f" href={`${WA}?text=${waText}`} target="_blank" rel="noopener">
+          <small>Retour</small><span class="v">Vos dates</span>
+        </a>
+        <a class="f" href="/vehicules/">
+          <small>Véhicule</small><span class="v">Caribian, scooter… ▾</span>
+        </a>
+        <a class="go" href={`${WA}?text=${waText}`} target="_blank" rel="noopener">C'est parti !</a>
+      </div>
+      <div class="chips">
+        <span>🛡️ Assurance incluse</span>
+        <span>📅 Acompte 1 000 THB seulement</span>
+        <span>💬 Réponse WhatsApp en minutes</span>
+      </div>
+    </div>
+    <div class="scrollcue" aria-hidden="true">▾</div>
+    <div class="wave" aria-hidden="true">
+      <svg viewBox="0 0 1440 70" preserveAspectRatio="none">
+        <path d="M0,40 C240,75 480,5 720,35 C960,65 1200,15 1440,45 L1440,70 L0,70 Z" fill="#fbf5ea" />
+      </svg>
+    </div>
+  </section>
+
+  <!-- ================= MARQUEE ================= -->
+  <div class="marq" aria-hidden="true">
+    <div class="track">
+      {[0, 1].map(() => marquee.map((m) => <span>{m} <b>·</b></span>))}
+    </div>
+  </div>
+
+  <!-- ================= FLOTTE ================= -->
+  <section id="flotte">
+    <div class="in">
+      <div class="fleet-head">
+        <div>
+          <span class="kicker rv">Notre flotte</span>
+          <h2 class="rv" style="--d:.08s">Des véhicules qui ont un prénom</h2>
+          <p class="lead rv" style="--d:.16s">
+            Chaque voiture est unique, préparée et suivie par nous. Prix moyenne saison,
+            dégressifs dès 7 jours — la grille complète est publique, sans astérisque.
+          </p>
+        </div>
+        <a class="btn-ghost rv" style="--d:.2s" href="/vehicules/">Toute la flotte (15) →</a>
+      </div>
+      <div class="fleet">
+        {cars.map((car, i) => <CarCard car={car} delay={i * 0.08} />)}
+        {xmax && (
+          <article class="car rv" style={`--d:.4s`}>
+            <div class="im">
+              <span class="badge palm">Agile</span>
+              <img src={`/img/${xmax.images[0]}.jpg`} alt="Yamaha XMAX 300 à louer" width="900" height="600" loading="lazy" />
+            </div>
+            <div class="bd">
+              <h3>{xmax.nom}</h3>
+              <div class="who">Maxi-scooter · 2 casques fournis</div>
+              <div class="specs"><i>Top-case</i><i>{xmax.prixMois.toLocaleString('fr-FR')} ฿/mois</i></div>
+              <div class="foot">
+                <div class="px">
+                  <b>{xmax.prixJour} ฿</b>
+                  <small>par jour</small>
+                </div>
+                <a class="rsv" href={`${WA}?text=${waText}`} target="_blank" rel="noopener">Réserver</a>
+              </div>
+            </div>
+          </article>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= POURQUOI NOUS ================= -->
+  <section class="deep" id="pourquoi">
+    <Wave fill="#fbf5ea" flip />
+    <div class="in">
+      <span class="kicker rv">Pourquoi Caribian Rental</span>
+      <h2 class="rv" style="--d:.08s">Louer sans mauvaise surprise</h2>
+      <p class="lead rv" style="--d:.16s">
+        Nous sommes une petite équipe locale : chaque client compte, chaque véhicule est suivi de près.
+      </p>
+      <div class="stats">
+        <div class="stat pop"><b class="cnt" data-n="4.9" data-d="1">0</b><small>Note Google</small></div>
+        <div class="stat pop" style="--d:.1s"><b class="cnt" data-n="15">0</b><small>Véhicules uniques</small></div>
+        <div class="stat pop" style="--d:.2s"><b><span class="cnt" data-n="1000">0</span> ฿</b><small>d'acompte seulement</small></div>
+        <div class="stat pop" style="--d:.3s"><b class="cnt" data-n="7">0</b><small>j/7 sur WhatsApp</small></div>
+      </div>
+      <div class="whys">
+        <div class="why rv">
+          <div class="ic">🛡️</div><h4>Assurés, vraiment</h4>
+          <p>Assurance gouvernementale incluse sur tous les véhicules. Franchise annoncée d'avance : 20 000 ฿, pas de ligne cachée.</p>
+        </div>
+        <div class="why rv" style="--d:.08s">
+          <div class="ic">🚗</div><h4>Livrés à votre hôtel</h4>
+          <p>Livraison gratuite pour toute location de plus de 10 jours, plein fait, état des lieux photographié ensemble.</p>
+        </div>
+        <div class="why rv" style="--d:.16s">
+          <div class="ic">📅</div><h4>Réservation légère</h4>
+          <p>1 000 ฿ d'acompte, le reste à la remise des clés. Annulation ou modification gratuite jusqu'à 7 jours avant.</p>
+        </div>
+        <div class="why rv" style="--d:.24s">
+          <div class="ic">🔧</div><h4>Entretien maison</h4>
+          <p>Chaque véhicule est révisé entre deux locations — clim, freins, pneus. Les Caribian + sont assurées pour 5 personnes.</p>
+        </div>
+      </div>
+    </div>
+    <Wave fill="#fbf5ea" />
+  </section>
+
+  <!-- ================= KOH SAMUI ================= -->
+  <section class="trip" id="ile">
+    <div class="in trip-grid">
+      <div class="polas rv">
+        <span class="sticker s1">🌴 Chaweng · Lamai · Bophut</span>
+        <span class="sticker s2">📍 guide local inclus</span>
+        <div class="pola">
+          <img src="/img/famille.jpg" alt="Famille sur une plage de Koh Samui" loading="lazy" />
+          <span class="cap">en famille, banquette arrière</span>
+        </div>
+        <div class="pola">
+          <img src="/img/snow-white-1.jpg" alt="Caribian Snow White" loading="lazy" />
+          <span class="cap">Snow White</span>
+        </div>
+        <div class="pola">
+          <img src="/img/green-star-1.jpg" alt="Caribian Green Star" loading="lazy" />
+          <span class="cap">Green Star, prête à partir</span>
+        </div>
+      </div>
+      <div>
+        <span class="kicker rv">Votre séjour</span>
+        <h2 class="rv" style="--d:.08s">On ne loue pas que des voitures, on connaît l'île</h2>
+        <p class="lead rv" style="--d:.14s">Avec chaque location, nos meilleures adresses testées et approuvées :</p>
+        <ul class="triplist">
+          <li class="rv" style="--d:.2s"><span class="dot">01</span><div><b>Les plages et points de vue</b> — Chaweng, Lamai, Overlap Stone, les cascades de Na Muang.</div></li>
+          <li class="rv" style="--d:.26s"><span class="dot">02</span><div><b>Les temples</b> — le Grand Bouddha, Wat Plai Laem, Wat Sila Ngu au lever du soleil.</div></li>
+          <li class="rv" style="--d:.32s"><span class="dot">03</span><div><b>Les marchés du soir</b> — le bon marché du bon jour, de Fisherman's Village à Lamai.</div></li>
+          <li class="rv" style="--d:.38s"><span class="dot">04</span><div><b>Les conseils pratiques</b> — permis international, casques, visa, santé.</div></li>
+        </ul>
+        <a class="btn-sun rv" style="--d:.44s" href="/koh-samui/">Découvrir le guide de l'île →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= AVIS ================= -->
+  <section class="reviews" id="avis">
+    <div class="in" style="padding-bottom:60px">
+      <span class="kicker rv">Ils ont roulé avec nous</span>
+      <h2 class="rv" style="--d:.08s">La confiance, ça se lit</h2>
+      <div class="gnote rv" style="--d:.14s">
+        <span class="big">4,9</span>
+        <div>
+          <span class="st">★★★★★</span>
+          <small>note moyenne sur Google</small>
+        </div>
+      </div>
+    </div>
+    <div class="rband">
+      <div class="rtrack">
+        {[0, 1].map(() => (
+          <>
+            <div class="rev"><div class="who"><span class="av">S</span><div><b>Sophie M.</b><span class="st">★★★★★</span></div></div>« La Caribian décapotée sur la côte, les enfants sur la banquette arrière : LE souvenir du séjour. »</div>
+            <div class="rev"><div class="who"><span class="av">J</span><div><b>Julien R.</b><span class="st">★★★★★</span></div></div>« Livrée à l'hôtel, état impeccable, caution rendue sans discussion. On reviendra. »</div>
+            <div class="rev"><div class="who"><span class="av">L</span><div><b>Léa T.</b><span class="st">★★★★★</span></div></div>« Réponse WhatsApp en 5 minutes, conseils sur les plages en bonus. Confiance totale. »</div>
+            <div class="rev"><div class="who"><span class="av">M</span><div><b>Marc D.</b><span class="st">★★★★★</span></div></div>« Le Goldorak est une légende. Prix honnêtes, équipe adorable, zéro stress. »</div>
+            <div class="rev"><div class="who"><span class="av">A</span><div><b>Anna K.</b><span class="st">★★★★★</span></div></div>« Scooter nickel, deux casques propres, itinéraire des temples offert. Merci ! »</div>
+          </>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section class="cta-band">
+    <div class="sun-deco" aria-hidden="true"></div>
+    <div class="in">
+      <h2 class="rv">Votre Caribian vous attend.</h2>
+      <p class="rv" style="--d:.1s">Dites-nous vos dates, on s'occupe du reste — réponse en quelques minutes, 7j/7.</p>
+      <a class="btn-wa rv" style="--d:.2s" href={`${WA}?text=${waText}`} target="_blank" rel="noopener">
+        💬 WhatsApp · +66 80 685 3817
+      </a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---------- hero ---------- */
+  .hero{ position:relative; min-height:104vh; display:flex; align-items:flex-end; overflow:hidden; }
+  .hero .bg{ position:absolute; inset:-6%;
+    background:url('/img/hero-plage.jpg') center 60%/cover no-repeat;
+    animation:kb 26s ease-in-out infinite alternate; }
+  @keyframes kb{ from{ transform:scale(1) translateY(0); } to{ transform:scale(1.09) translateY(-1.6%); } }
+  .hero .veil{ position:absolute; inset:0;
+    background:linear-gradient(178deg, rgba(6,50,58,.52) 0%, rgba(6,50,58,.10) 42%, rgba(6,50,58,.60) 88%); }
+  .hero-in{ position:relative; z-index:2; width:100%; text-align:center; color:#fff;
+    padding:19vh 20px 12vh; }
+  .kick{ display:inline-flex; align-items:center; gap:9px; background:rgba(255,255,255,.14);
+    border:1px solid rgba(255,255,255,.35); backdrop-filter:blur(8px);
+    -webkit-backdrop-filter:blur(8px); border-radius:999px; padding:7px 18px;
+    font-size:.8rem; font-weight:700; letter-spacing:.06em; }
+  .kick .st{ color:var(--sun); }
+  .hero h1{ font-size:clamp(2.5rem,7.2vw,4.9rem); line-height:1.02; margin:.35em auto .25em;
+    max-width:14ch; text-shadow:0 4px 30px rgba(0,20,24,.45); }
+  .hero h1 .w{ display:inline-block; opacity:0; transform:translateY(.55em) rotate(2deg);
+    animation:wordup .7s cubic-bezier(.2,.7,.2,1.2) forwards; animation-delay:var(--wd);
+    margin-right:.22em; }
+  .hero h1 .w:last-child{ margin-right:0; }
+  @keyframes wordup{ to{ opacity:1; transform:none; } }
+  .hero h1 .hl{ position:relative; white-space:nowrap; }
+  .hero h1 .hl::after{ content:''; position:absolute; left:-2%; right:102%; bottom:.04em;
+    height:.34em; background:var(--sun); z-index:-1; border-radius:4px; opacity:.9;
+    transform:skewX(-8deg); animation:swipe .6s ease-out forwards; animation-delay:1.15s; }
+  @keyframes swipe{ to{ right:-2%; } }
+  .hero .sub{ font-size:clamp(.95rem,1.6vw,1.15rem); opacity:0; max-width:52ch; margin:0 auto 34px;
+    text-shadow:0 2px 14px rgba(0,20,24,.5); transform:translateY(14px);
+    animation:fadeup .8s ease forwards; animation-delay:1.05s; }
+  @keyframes fadeup{ to{ opacity:.97; transform:none; } }
+  .book{ display:flex; max-width:700px; margin:0 auto; background:rgba(255,255,255,.92);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); border-radius:18px;
+    overflow:hidden; text-align:left; box-shadow:0 24px 60px -18px rgba(4,40,46,.55);
+    opacity:0; transform:translateY(26px); animation:fadeup .8s ease forwards; animation-delay:1.35s; }
+  .book .f{ flex:1; padding:15px 20px; border-right:1px solid #e9e2d2; min-width:0;
+    text-decoration:none; transition:background .2s; }
+  .book .f:hover{ background:#fff; }
+  .book small{ display:block; text-transform:uppercase; letter-spacing:.12em; font-size:.6rem;
+    color:var(--soft); font-weight:800; }
+  .book .v{ font-size:.95rem; font-weight:700; color:var(--ink); white-space:nowrap; }
+  .book .go{ display:flex; align-items:center; background:linear-gradient(135deg, var(--coral), #ff8a3d);
+    color:#fff; font-weight:800; font-size:.95rem; padding:0 32px; text-decoration:none;
+    transition:filter .2s; }
+  .book .go:hover{ filter:brightness(1.08); }
+  .chips{ display:flex; justify-content:center; flex-wrap:wrap; gap:12px 26px; margin-top:26px;
+    font-size:.82rem; font-weight:600; opacity:0; animation:fadeup .8s ease forwards;
+    animation-delay:1.6s; }
+  .chips span{ display:inline-flex; gap:7px; align-items:center;
+    text-shadow:0 1px 10px rgba(0,20,24,.55); }
+  .hero .wave{ position:absolute; bottom:-1px; left:0; right:0; z-index:3; }
+  .hero .wave svg{ display:block; width:100%; height:70px; }
+  .scrollcue{ position:absolute; bottom:84px; left:50%; transform:translateX(-50%); z-index:4;
+    color:#fff; font-size:1.3rem; animation:bounce 1.8s ease-in-out infinite; opacity:.8; }
+  @keyframes bounce{ 0%,100%{ transform:translate(-50%,0); } 50%{ transform:translate(-50%,10px); } }
+
+  /* ---------- marquee ---------- */
+  .marq{ background:var(--sun); color:#4a3305; transform:rotate(-1.3deg) scale(1.02);
+    margin:-8px 0 0; padding:13px 0; overflow:hidden; position:relative; z-index:4;
+    box-shadow:0 10px 30px -14px rgba(120,80,0,.35); }
+  .marq .track{ display:flex; width:max-content; animation:slide 30s linear infinite; }
+  .marq:hover .track{ animation-play-state:paused; }
+  @keyframes slide{ to{ transform:translateX(-50%); } }
+  .marq span{ font-family:var(--disp); font-weight:800; font-size:.92rem; letter-spacing:.08em;
+    text-transform:uppercase; padding:0 22px; white-space:nowrap; }
+  .marq b{ color:var(--coral); }
+
+  /* ---------- flotte ---------- */
+  .fleet-head{ display:flex; align-items:flex-end; justify-content:space-between; gap:20px;
+    flex-wrap:wrap; }
+
+  /* ---------- pourquoi nous ---------- */
+  .stats{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:18px;
+    margin:44px 0 50px; }
+  .stat{ background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14);
+    border-radius:18px; padding:20px 14px; text-align:center; }
+  .stat b{ font-family:var(--disp); display:block; font-size:2.1rem; font-weight:800;
+    color:var(--sun); font-variant-numeric:tabular-nums; line-height:1.1; }
+  .stat small{ font-size:.74rem; text-transform:uppercase; letter-spacing:.12em; color:#a8d6db;
+    font-weight:700; }
+  .whys{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:20px; }
+  .why{ background:rgba(255,255,255,.055); border:1px solid rgba(255,255,255,.12);
+    border-radius:20px; padding:24px 22px; transition:transform .3s, background .3s; }
+  .why:hover{ transform:translateY(-5px); background:rgba(255,255,255,.1); }
+  .why .ic{ width:46px; height:46px; border-radius:14px; display:flex; align-items:center;
+    justify-content:center; font-size:1.25rem; margin-bottom:14px; }
+  .why:nth-child(1) .ic{ background:var(--coral); }
+  .why:nth-child(2) .ic{ background:var(--sun); }
+  .why:nth-child(3) .ic{ background:var(--palm); }
+  .why:nth-child(4) .ic{ background:var(--turq); }
+  .why h4{ margin:0 0 6px; font-size:1rem; font-family:var(--disp); font-weight:800; }
+  .why p{ margin:0; font-size:.86rem; color:#c2e2e6; }
+
+  /* ---------- Koh Samui ---------- */
+  .trip-grid{ display:grid; grid-template-columns:1fr 1fr; gap:56px; align-items:center; }
+  .polas{ position:relative; min-height:420px; }
+  .pola{ position:absolute; background:#fff; padding:10px 10px 40px; border-radius:6px;
+    box-shadow:0 16px 40px -14px rgba(30,40,35,.35);
+    transition:transform .4s cubic-bezier(.2,.7,.3,1.3); }
+  .pola img{ border-radius:3px; }
+  .pola .cap{ position:absolute; bottom:10px; left:0; right:0; text-align:center;
+    font-size:.78rem; color:#6d675c; font-family:Georgia,serif; font-style:italic; }
+  .pola:nth-of-type(1){ width:56%; top:0; left:0; transform:rotate(-4deg); z-index:1; }
+  .pola:nth-of-type(2){ width:48%; top:26%; right:0; transform:rotate(3.2deg); z-index:2; }
+  .pola:nth-of-type(3){ width:44%; bottom:0; left:12%; transform:rotate(-1.8deg); z-index:3; }
+  .pola:hover{ transform:rotate(0) scale(1.05); z-index:9; }
+  .sticker{ position:absolute; z-index:5; background:var(--coral); color:#fff; font-weight:800;
+    font-size:.72rem; letter-spacing:.06em; padding:7px 14px; border-radius:999px;
+    box-shadow:0 6px 16px -4px rgba(200,60,40,.5); }
+  .sticker.s1{ top:-10px; right:8%; transform:rotate(6deg); background:var(--palm); }
+  .sticker.s2{ bottom:18%; right:-6px; transform:rotate(-5deg); }
+  .triplist{ list-style:none; padding:0; margin:22px 0 30px; display:grid; gap:12px; }
+  .triplist li{ display:flex; gap:12px; align-items:flex-start; font-size:.94rem; }
+  .triplist .dot{ flex:none; width:26px; height:26px; border-radius:50%; background:var(--turq);
+    color:#fff; font-size:.72rem; font-weight:800; display:flex; align-items:center;
+    justify-content:center; margin-top:1px; }
+
+  /* ---------- avis ---------- */
+  .reviews{ background:#fff; }
+  .rband{ overflow:hidden; position:relative; padding-bottom:56px;
+    -webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);
+    mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent); }
+  .rtrack{ display:flex; gap:22px; width:max-content; animation:slide 44s linear infinite;
+    padding:6px 0 14px; }
+  .rband:hover .rtrack{ animation-play-state:paused; }
+  .rev{ width:300px; flex:none; background:var(--sand); border-radius:18px; padding:20px 22px;
+    font-size:.88rem; box-shadow:0 6px 18px -10px rgba(30,60,66,.18); }
+  .rev .who{ display:flex; align-items:center; gap:11px; margin-bottom:10px; }
+  .rev .av{ width:38px; height:38px; border-radius:50%; color:#fff; font-weight:800;
+    display:flex; align-items:center; justify-content:center; }
+  .rev:nth-child(5n+1) .av{ background:var(--lagoon); }
+  .rev:nth-child(5n+2) .av{ background:var(--coral); }
+  .rev:nth-child(5n+3) .av{ background:var(--palm); }
+  .rev:nth-child(5n+4) .av{ background:#c98f1b; }
+  .rev:nth-child(5n) .av{ background:var(--turq); }
+  .rev b{ font-size:.86rem; display:block; }
+  .rev .st{ color:#f0a92d; font-size:.78rem; letter-spacing:.08em; }
+  .gnote{ display:flex; align-items:center; gap:14px; margin-top:8px; }
+  .gnote .big{ font-family:var(--disp); font-size:3rem; font-weight:800; color:var(--lagoon);
+    line-height:1; }
+  .gnote .st{ color:#f0a92d; font-size:1.05rem; letter-spacing:.1em; }
+  .gnote small{ color:var(--soft); display:block; }
+
+  /* ---------- CTA finale ---------- */
+  .cta-band{ background:linear-gradient(120deg, var(--coral) 0%, #ff9a3d 60%, var(--sun) 100%);
+    color:#fff; text-align:center; overflow:hidden; position:relative; }
+  .cta-band .in{ padding:76px 5vw 84px; }
+  .cta-band h2{ color:#fff; font-size:clamp(1.9rem,4.5vw,3rem); margin:0 0 10px;
+    text-shadow:0 2px 18px rgba(160,50,20,.3); }
+  .cta-band p{ margin:0 auto 32px; max-width:44ch; opacity:.95; }
+  .sun-deco{ position:absolute; width:340px; height:340px; border-radius:50%;
+    background:radial-gradient(circle, rgba(255,255,255,.25), transparent 70%);
+    top:-140px; right:-80px; }
+
+  @media (max-width:780px){
+    .hero{ min-height:96vh; }
+    .book{ flex-direction:column; }
+    .book .f{ border-right:none; border-bottom:1px solid #e9e2d2; }
+    .book .go{ padding:16px; justify-content:center; }
+    .trip-grid{ grid-template-columns:1fr; }
+    .polas{ min-height:340px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .hero .bg{ animation:none; }
+    .hero h1 .w{ opacity:1; transform:none; animation:none; }
+    .hero h1 .hl::after{ right:-2%; animation:none; }
+    .hero .sub, .chips, .book{ opacity:1; transform:none; animation:none; }
+    .marq .track, .rtrack{ animation:none; }
+    .scrollcue{ animation:none; }
+  }
+</style>

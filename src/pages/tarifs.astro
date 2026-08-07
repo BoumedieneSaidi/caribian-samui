@@ -1,0 +1,190 @@
+---
+import Base from '../layouts/Base.astro';
+import Wave from '../components/Wave.astro';
+
+const WA = 'https://wa.me/66806853817';
+
+// Grilles officielles 2026 (extraites des PDF de tarifs du loueur)
+const saisonsVoitures = [
+  { nom: 'PIK', periode: '21 déc → 7 janv' },
+  { nom: 'HAUTE', periode: '8 janv → 31 mars · 16 juil → 31 août' },
+  { nom: 'MOYENNE', periode: '1 avr → 15 mai · sept-nov · 1 → 20 déc' },
+  { nom: 'BASSE', periode: '16 mai → 15 juil' },
+];
+const voitures = [
+  { nom: 'Caribian 2+2', prix: [[1500,1200,1000,800],[1400,1100,900,700],[1100,900,700,600],[null,800,600,500]], mois: [null,18000,16000,14000] },
+  { nom: 'Caribian + (5 places)', prix: [[1600,1300,1100,900],[1500,1200,1000,800],[1300,1000,800,700],[null,900,700,600]], mois: [null,19000,17000,15000] },
+  { nom: 'Ford Ecosport', prix: [[1700,1400,1200,1000],[1600,1300,1100,900],[1400,1100,900,800],[null,1000,800,700]], mois: [null,20000,18000,16000] },
+  { nom: 'Honda CRV', prix: [[1600,1300,1100,900],[1500,1200,1000,800],[1300,1000,800,700],[null,900,700,600]], mois: [null,19000,17000,15000] },
+];
+const ranger = { prix: [2000,1800,1600,1400], mois: 30000 };
+const durees = ['1 à 6 jours','7 à 13 jours','14 à 20 jours','21 à 29 jours'];
+
+const saisonsScooters = [
+  { nom: 'PIK', periode: '21 déc → 7 janv' },
+  { nom: 'HAUTE', periode: '8 janv → 15 avr · 16 juil → 31 août' },
+  { nom: 'BASSE', periode: '16 avr → 15 juil · sept-nov · 1 → 20 déc' },
+];
+const scooters = [
+  { nom: 'Honda ADV 350', caution: 10000, prix: [[1000,900,600],[950,850,500],[900,800,400],[null,750,350]], mois: [null,15000,10000] },
+  { nom: 'Honda Forza 350', caution: 10000, prix: [[1000,900,600],[950,850,500],[900,800,400],[null,750,350]], mois: [null,15000,10000] },
+  { nom: 'Yamaha XMAX 300', caution: 10000, prix: [[800,700,500],[750,650,450],[700,600,400],[null,550,350]], mois: [null,12000,8000] },
+  { nom: 'Honda ADV 160', caution: 5000, prix: [[550,450,350],[500,400,300],[450,350,250],[null,300,220]], mois: [null,7000,5000] },
+  { nom: 'Honda Click 160', caution: 5000, prix: [[450,350,300],[400,300,250],[350,250,200],[null,200,180]], mois: [null,5000,4000] },
+  { nom: 'Honda Click 125', caution: 3000, prix: [[350,250,200],[280,200,180],[230,180,150],[null,150,130]], mois: [null,4000,3000] },
+];
+
+const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('fr-FR'));
+---
+<Base
+  title="Tarifs 2026 — grilles complètes par saison | Caribian Rental Samui"
+  description="Tous nos prix de location à Koh Samui, publics et sans astérisque : voitures et scooters, par saison et par durée. Caution et franchise annoncées d'avance."
+  path="/tarifs/"
+>
+  <header class="page-head">
+    <span class="kicker">Tarifs 2026</span>
+    <h1>Des prix sans astérisque</h1>
+    <p>
+      Toute la grille, en bahts, par saison et par durée. Ce que vous voyez ici est
+      ce que vous payez — TVA et assurance incluses (franchise 20 000 ฿).
+    </p>
+  </header>
+  <Wave fill="#fbf5ea" bg="#084c54" />
+
+  <section>
+    <div class="in" style="padding-top:44px">
+      <span class="kicker rv">Voitures</span>
+      <h2 class="rv" style="--d:.06s">Caribian, SUV &amp; pick-up</h2>
+      <p class="lead rv" style="--d:.12s">Caution pour toutes les voitures : 10 000 ฿, restituée au retour.</p>
+
+      <div class="legend rv" style="--d:.16s">
+        {saisonsVoitures.map((s) => (
+          <span><b>{s.nom}</b> {s.periode}</span>
+        ))}
+      </div>
+
+      {voitures.map((v, vi) => (
+        <div class="bloc rv" style={`--d:${0.06 * (vi % 2)}s`}>
+          <h3>{v.nom}</h3>
+          <div class="twrap">
+            <table class="tarifs">
+              <thead>
+                <tr>
+                  <th>Durée</th>
+                  {saisonsVoitures.map((s) => <th>{s.nom}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {durees.map((d, di) => (
+                  <tr>
+                    <td>{d}</td>
+                    {v.prix[di].map((p, pi) => (
+                      <td class={pi === 3 ? 'hl' : undefined}>{fmt(p)}{p !== null && ' ฿'}</td>
+                    ))}
+                  </tr>
+                ))}
+                <tr>
+                  <td>1 mois</td>
+                  {v.mois.map((p) => <td>{p === null ? '—' : `${fmt(p)} ฿`}</td>)}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))}
+
+      <div class="bloc rv">
+        <h3>Ford Ranger « Big Red One »</h3>
+        <div class="twrap">
+          <table class="tarifs">
+            <thead><tr><th>Durée</th><th>Tarif unique toutes saisons</th></tr></thead>
+            <tbody>
+              {durees.map((d, di) => (
+                <tr><td>{d}</td><td class="hl">{fmt(ranger.prix[di])} ฿</td></tr>
+              ))}
+              <tr><td>1 mois</td><td>{fmt(ranger.mois)} ฿</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="deep">
+    <Wave fill="#fbf5ea" flip />
+    <div class="in">
+      <span class="kicker rv">Scooters</span>
+      <h2 class="rv" style="--d:.06s">Du Click 125 au maxi-scooter</h2>
+      <div class="legend onDeep rv" style="--d:.12s">
+        {saisonsScooters.map((s) => (
+          <span><b>{s.nom}</b> {s.periode}</span>
+        ))}
+      </div>
+
+      <div class="scoot-grid">
+        {scooters.map((s, si) => (
+          <div class="bloc rv" style={`--d:${0.06 * (si % 2)}s`}>
+            <h3>{s.nom} <em>caution {s.caution.toLocaleString('fr-FR')} ฿</em></h3>
+            <div class="twrap">
+              <table class="tarifs">
+                <thead>
+                  <tr><th>Durée</th>{saisonsScooters.map((x) => <th>{x.nom}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {durees.map((d, di) => (
+                    <tr>
+                      <td>{d}</td>
+                      {s.prix[di].map((p, pi) => (
+                        <td class={pi === 2 ? 'hl' : undefined}>{fmt(p)}{p !== null && ' ฿'}</td>
+                      ))}
+                    </tr>
+                  ))}
+                  <tr>
+                    <td>1 mois</td>
+                    {s.mois.map((p) => <td>{p === null ? '—' : `${fmt(p)} ฿`}</td>)}
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+    <Wave fill="#fbf5ea" bg="#084c54" />
+  </section>
+
+  <section>
+    <div class="in essentials">
+      <span class="kicker rv">L'essentiel</span>
+      <h2 class="rv" style="--d:.06s">Ce qui est toujours vrai</h2>
+      <div class="facts">
+        <div class="fact rv"><b>Inclus</b>TVA et assurance gouvernementale (franchise 20 000 ฿).</div>
+        <div class="fact rv" style="--d:.06s"><b>Acompte</b>1 000 ฿ à la réservation, le solde à la remise des clés.</div>
+        <div class="fact rv" style="--d:.12s"><b>Annulation</b>Gratuite jusqu'à 7 jours avant le début de la location.</div>
+        <div class="fact rv" style="--d:.18s"><b>Non inclus</b>Essence (plein rendu = plein reçu), livraison hors conditions.</div>
+      </div>
+      <div style="text-align:center; margin-top:36px">
+        <a class="btn-sun rv" href={`${WA}?text=${encodeURIComponent('Bonjour ! Pouvez-vous me faire un devis ? Mes dates : ')}`} target="_blank" rel="noopener">
+          💬 Demander un devis précis
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .legend{ display:flex; flex-wrap:wrap; gap:10px 22px; margin:18px 0 8px; font-size:.8rem;
+    color:var(--soft); }
+  .legend b{ color:var(--lagoon); margin-right:5px; letter-spacing:.05em; }
+  .legend.onDeep{ color:#a8d6db; }
+  .legend.onDeep b{ color:var(--sun); }
+  .bloc{ margin-top:34px; }
+  .bloc h3{ font-family:var(--disp); font-size:1.15rem; margin:0 0 12px; }
+  .bloc h3 em{ font-style:normal; font-size:.75rem; font-weight:600; opacity:.7; margin-left:10px; }
+  .scoot-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(330px,1fr)); gap:8px 28px; }
+  .facts{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px;
+    margin-top:26px; }
+  .fact{ background:#fff; border-radius:16px; padding:18px 20px; font-size:.88rem;
+    color:var(--soft); box-shadow:0 6px 20px -12px rgba(10,70,80,.25); }
+  .fact b{ display:block; font-family:var(--disp); color:var(--ink); margin-bottom:4px; }
+</style>

@@ -1,0 +1,52 @@
+---
+/** Carte véhicule (voiture) alimentée par src/data/vehicules.json */
+interface Props {
+  car: {
+    slug: string;
+    nom: string;
+    famille: string;
+    badge: string;
+    badgeColor: string;
+    places: string;
+    transmission: string;
+    extra?: string;
+    prixJour: number;
+    prixJourEur: number;
+    images: string[];
+  };
+  delay?: number;
+  loading?: 'lazy' | 'eager';
+}
+const { car, delay = 0, loading = 'lazy' } = Astro.props;
+const WA = 'https://wa.me/66806853817';
+const waText = encodeURIComponent(
+  `Bonjour ! Je souhaite réserver ${car.nom} (${car.famille}). Mes dates : `
+);
+---
+<article class="car rv" style={`--d:${delay}s`}>
+  <div class="im">
+    <span class={`badge ${car.badgeColor}`}>{car.badge}</span>
+    <img
+      src={`/img/${car.images[0]}.jpg`}
+      alt={`${car.famille} ${car.nom} à louer chez Caribian Rental Samui`}
+      width="900"
+      height="600"
+      loading={loading}
+    />
+  </div>
+  <div class="bd">
+    <h3>{car.nom}</h3>
+    <div class="who">{car.famille} · {car.places} · clim</div>
+    <div class="specs">
+      <i>{car.transmission}</i>
+      {car.extra && <i>{car.extra}</i>}
+    </div>
+    <div class="foot">
+      <div class="px">
+        <b>{car.prixJour.toLocaleString('fr-FR')} ฿</b>
+        <small>par jour · {car.prixJourEur} €</small>
+      </div>
+      <a class="rsv" href={`${WA}?text=${waText}`} target="_blank" rel="noopener">Réserver</a>
+    </div>
+  </div>
+</article>

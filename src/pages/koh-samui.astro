@@ -1,0 +1,145 @@
+---
+import Base from '../layouts/Base.astro';
+import Wave from '../components/Wave.astro';
+
+// Guide en 9 chapitres — contenu repris de l'ancien site, réécrit et structuré
+const chapitres = [
+  {
+    id: 'histoire', titre: "L'île aux noix de coco",
+    texte: [
+      "Nichée dans le golfe de Thaïlande, Koh Samui est la deuxième plus grande île du pays, à environ 700 km au sud de Bangkok, dans la province de Surat Thani.",
+      "Surnommée « l'île aux noix de coco » pour ses cocoteraies à perte de vue, elle fut longtemps une communauté de pêcheurs et un refuge pour les commerçants de la mer — avant de devenir le paradis tropical qu'on connaît, sans perdre son âme.",
+    ],
+  },
+  {
+    id: 'incontournables', titre: 'Les incontournables',
+    texte: [
+      "Les plages d'abord : Chaweng la vivante (sable blanc poudreux, vie nocturne), Lamai la détendue, et Bophut avec son charmant Fisherman's Village.",
+      "Côté panoramas : l'Overlap Stone, rocher géant au-dessus de Lamai, reste un joyau méconnu. Les rochers Hin Ta et Hin Yai (« grand-père et grand-mère ») valent le détour pour leur forme… étonnante.",
+      "Et pour se rafraîchir : les cascades à deux niveaux de Na Muang et la cascade isolée de Hin Lad. Les plongeurs viseront le parc marin national d'Ang Thong et ses 42 îles aux lagons émeraude.",
+    ],
+  },
+  {
+    id: 'temples', titre: 'Les temples',
+    texte: [
+      "Le Grand Bouddha de Wat Phra Yai — 12 mètres d'or au-dessus de la mer — est l'emblème de l'île. Wat Plai Laem, tout proche, éblouit avec sa statue géante de Guanyin.",
+      "Notre préféré au lever du soleil : Wat Sila Ngu, au-dessus de la plage de Hua Thanon, accessible par un escalier depuis le sable.",
+    ],
+  },
+  {
+    id: 'activites', titre: 'Les activités',
+    texte: [
+      "Kayak, paddle, jet-ski, voile : tous les sports nautiques sont là. Les îles voisines Koh Phangan et Koh Tao (plongée de classe mondiale) se rejoignent en bateau.",
+      "Testez un cours de cuisine thaïlandaise, ou une pause bien-être — on recommande le Fisherman Massage & Beauty Salon à Fisherman's Village.",
+    ],
+  },
+  {
+    id: 'soirees', titre: 'Marchés du soir & vie nocturne',
+    texte: [
+      "La nuit tombe à 19 h — parfait pour enchaîner sur les marchés nocturnes : lundi à Fisherman's Village, mardi-mercredi à Central Festival Chaweng (17h-23h), jeudi à Mae Nam, vendredi le grand marché de Fisherman's Village, samedi au bord du lac de Chaweng, dimanche à Lamai.",
+      "Street-food, artisanat, musique live : chaque marché a sa personnalité. Demandez-nous le bon marché du bon soir.",
+    ],
+  },
+  {
+    id: 'sante', titre: 'Santé & assurances',
+    texte: [
+      "Aucun vaccin obligatoire (hépatites A/B, tétanos-polio et typhoïde recommandés). Ne buvez pas l'eau du robinet, hydratez-vous, protégez-vous du soleil et des moustiques.",
+      "Bon à savoir : votre carte bancaire vous assure souvent pour les séjours de moins de 90 jours (vérifiez les conditions : hospitalisation, avance de frais, rapatriement). Des hôpitaux de classe internationale existent sur l'île.",
+    ],
+  },
+  {
+    id: 'conduire', titre: 'Conduire à Koh Samui',
+    texte: [
+      "Faites votre permis international avant de partir : gratuit, rapide, et souvent exigé par les assurances en cas de pépin.",
+      "Le casque est obligatoire (contrôles fréquents) — nous fournissons deux casques avec chaque deux-roues. Inspectez toujours un véhicule de location avant de partir : chez nous, l'état des lieux se fait ensemble, photos à l'appui.",
+      "En cas d'accident : ne touchez à rien et prévenez la police touristique. Et pour les taxis, négociez le prix avant de monter — les compteurs ne s'allument jamais à Samui.",
+    ],
+  },
+  {
+    id: 'visas', titre: 'Passeport & visa',
+    texte: [
+      "Passeport valide 6 mois après la date d'arrivée. Gardez une copie sur vous et un scan dans vos e-mails, l'original au coffre de l'hôtel.",
+      "Pas de visa pour un séjour de moins de 30 jours ; extension d'un mois possible à l'immigration. Au-delà (90 jours max), demandez un e-Visa à l'ambassade avant le départ.",
+    ],
+  },
+  {
+    id: 'telephone', titre: 'Téléphone & internet',
+    texte: [
+      "Une carte SIM thaïlandaise est souvent offerte à l'aéroport (recharges dès 100 ฿ dans les 7-Eleven omniprésents).",
+      "Le wifi gratuit est partout : hôtels, cafés, restaurants. Vous resterez connectés sans effort.",
+    ],
+  },
+];
+---
+<Base
+  title="Guide de Koh Samui — plages, temples, conseils pratiques | Caribian Rental Samui"
+  description="Le guide de Koh Samui par votre loueur local : plages, temples, cascades, marchés nocturnes, conduite, visa, santé. Tous nos conseils testés et approuvés."
+  path="/koh-samui/"
+>
+  <header class="page-head">
+    <span class="kicker">Guide local</span>
+    <h1>Koh Samui, par ceux qui y vivent</h1>
+    <p>
+      Plages, temples, marchés du soir et conseils pratiques : tout ce qu'on raconte
+      à nos clients en leur remettant les clés, en une page.
+    </p>
+  </header>
+  <Wave fill="#fbf5ea" bg="#084c54" />
+
+  <section>
+    <div class="in guide">
+      <nav class="chapnav rv" aria-label="Chapitres du guide">
+        {chapitres.map((c, i) => (
+          <a href={`#${c.id}`}><b>{String(i + 1).padStart(2, '0')}</b> {c.titre}</a>
+        ))}
+      </nav>
+
+      <div class="chapters">
+        {chapitres.map((c, i) => (
+          <article id={c.id} class="chap rv">
+            <div class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</div>
+            <div>
+              <h2>{c.titre}</h2>
+              {c.texte.map((p) => <p>{p}</p>)}
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-mini">
+    <div class="in" style="text-align:center">
+      <h2 class="rv">Le meilleur guide reste un volant entre les mains</h2>
+      <p class="lead rv" style="--d:.08s; margin:0 auto 28px">
+        Tout ça se découvre bien mieux au rythme de votre propre véhicule.
+      </p>
+      <a class="btn-sun rv" style="--d:.16s" href="/vehicules/">Choisir mon véhicule →</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .guide{ display:grid; grid-template-columns:250px 1fr; gap:48px; align-items:start;
+    padding-top:44px; }
+  .chapnav{ position:sticky; top:90px; display:grid; gap:4px; }
+  .chapnav a{ text-decoration:none; font-size:.86rem; font-weight:600; color:var(--soft);
+    padding:8px 12px; border-radius:10px; transition:background .2s, color .2s; }
+  .chapnav a:hover{ background:#fff; color:var(--ink); }
+  .chapnav b{ color:var(--turq); font-family:var(--disp); margin-right:6px; }
+  .chapters{ display:grid; gap:40px; }
+  .chap{ display:grid; grid-template-columns:64px 1fr; gap:20px; background:#fff;
+    border-radius:var(--radius); padding:30px 32px;
+    box-shadow:0 8px 26px -16px rgba(10,70,80,.22); scroll-margin-top:90px; }
+  .chap .num{ font-family:var(--disp); font-size:2rem; font-weight:800; color:var(--turq);
+    line-height:1; }
+  .chap h2{ font-size:1.35rem; margin:0 0 10px; }
+  .chap p{ margin:0 0 12px; color:#3f5a61; font-size:.94rem; max-width:62ch; }
+  .chap p:last-child{ margin-bottom:0; }
+  .cta-mini{ padding-bottom:30px; }
+  @media (max-width:880px){
+    .guide{ grid-template-columns:1fr; }
+    .chapnav{ position:static; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); }
+    .chap{ grid-template-columns:1fr; padding:24px; }
+  }
+</style>

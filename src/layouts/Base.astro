@@ -1,0 +1,153 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  /** URL de la page pour les liens canoniques / réseaux sociaux */
+  path?: string;
+}
+
+const { title, description, path = '/' } = Astro.props;
+const site = 'https://www.caribian-samui.com';
+const WA = 'https://wa.me/66806853817';
+const waText = encodeURIComponent('Bonjour Caribian Rental ! Je souhaite louer un véhicule à Koh Samui.');
+
+const pages = [
+  { href: '/vehicules/', label: 'Nos véhicules' },
+  { href: '/tarifs/', label: 'Tarifs' },
+  { href: '/koh-samui/', label: 'Koh Samui' },
+  { href: '/contact/', label: 'Contact' },
+];
+const current = Astro.url.pathname;
+---
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <link rel="canonical" href={site + path} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content={site + '/img/hero-plage.jpg'} />
+  <meta property="og:locale" content="fr_FR" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <a class="logo" href="/"><span class="sunmark"></span>Caribian Rental Samui</a>
+    <div class="links">
+      {pages.map((p) => (
+        <a href={p.href} aria-current={current === p.href ? 'page' : undefined}>{p.label}</a>
+      ))}
+    </div>
+    <a class="cta" href={`${WA}?text=${waText}`} target="_blank" rel="noopener">Réserver</a>
+  </nav>
+
+  <slot />
+
+  <footer>
+    <div class="in">
+      <div>
+        <b>Caribian Rental Samui</b><br />
+        Koh Samui, Thaïlande<br />
+        Location de voitures &amp; scooters
+      </div>
+      <div class="cols">
+        <div>
+          <b>Contact</b>
+          <ul>
+            <li><a href={`${WA}?text=${waText}`} target="_blank" rel="noopener">WhatsApp · +66 80 685 3817</a></li>
+            <li><a href="tel:+66806853817">Téléphone &amp; Line</a></li>
+            <li><a href="mailto:caribianrental.samui@gmail.com">caribianrental.samui@gmail.com</a></li>
+          </ul>
+        </div>
+        <div>
+          <b>Le site</b>
+          <ul>
+            <li><a href="/vehicules/">Nos véhicules</a></li>
+            <li><a href="/tarifs/">Tarifs &amp; saisons</a></li>
+            <li><a href="/koh-samui/">Guide de Koh Samui</a></li>
+            <li><a href="/conditions/">Conditions de location</a></li>
+            <li><a href="/confidentialite/">Confidentialité</a></li>
+          </ul>
+        </div>
+        <div>
+          <b>Suivez-nous</b>
+          <ul>
+            <li><a href="https://www.facebook.com/profile.php?id=100092700151512" target="_blank" rel="noopener">Facebook</a></li>
+            <li><a href="https://www.instagram.com/" target="_blank" rel="noopener">Instagram</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <a
+    class="wafloat"
+    href={`${WA}?text=${waText}`}
+    target="_blank"
+    rel="noopener"
+    aria-label="Nous écrire sur WhatsApp"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 1.8a8.2 8.2 0 1 1-4.2 15.3l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 0 1 12 3.8Zm-3.1 4c-.2 0-.5 0-.7.3-.2.3-.9.9-.9 2.1s.9 2.4 1 2.6c.1.2 1.8 2.8 4.4 3.8 2.2.9 2.6.7 3.1.7.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2l-.5-.3-1.7-.8c-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-2-1.2 7.5 7.5 0 0 1-1.4-1.7c-.1-.2 0-.4.1-.5l.4-.5c.1-.2.2-.3.3-.5v-.5L9.6 8.2c-.2-.4-.4-.4-.7-.4Z"/></svg>
+  </a>
+
+  <script>
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // barre de navigation : translucide dès qu'on quitte le haut de page
+    const nav = document.getElementById('nav');
+    const onScroll = () => nav?.classList.toggle('solid', scrollY > 40);
+    addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // révélations au scroll
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            e.target.classList.add('on');
+            io.unobserve(e.target);
+          }
+        }
+      },
+      { threshold: 0.12 }
+    );
+    document.querySelectorAll('.rv,.pop').forEach((el) => {
+      if (reduced) el.classList.add('on');
+      else io.observe(el);
+    });
+
+    // compteurs animés (éléments .cnt avec data-n / data-d)
+    const cio = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (!e.isIntersecting) continue;
+          const el = e.target as HTMLElement;
+          const target = parseFloat(el.dataset.n ?? '0');
+          const dec = parseInt(el.dataset.d ?? '0', 10);
+          cio.unobserve(el);
+          if (reduced) {
+            el.textContent = target.toFixed(dec).replace('.', ',');
+            continue;
+          }
+          let t0: number | null = null;
+          const step = (ts: number) => {
+            if (t0 === null) t0 = ts;
+            let p = Math.min((ts - t0) / 1200, 1);
+            p = 1 - Math.pow(1 - p, 3);
+            el.textContent = (target * p).toFixed(dec).replace('.', ',');
+            if (p < 1) requestAnimationFrame(step);
+          };
+          requestAnimationFrame(step);
+        }
+      },
+      { threshold: 0.5 }
+    );
+    document.querySelectorAll('.cnt').forEach((el) => cio.observe(el));
+  </script>
+</body>
+</html>

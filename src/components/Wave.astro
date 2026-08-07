@@ -1,0 +1,32 @@
+---
+/** Séparateur en vague entre deux sections.
+ *  `fill` : couleur de la vague (= couleur de la section adjacente qui « mord » dans celle-ci).
+ *  `flip` : true → la vague mord par le haut ; false → par le bas.
+ *  `bg`   : couleur de fond du bandeau (= couleur de la section que l'on quitte),
+ *           utile quand le séparateur est placé entre deux sections. */
+interface Props {
+  fill?: string;
+  flip?: boolean;
+  bg?: string;
+}
+const { fill = '#fbf5ea', flip = false, bg } = Astro.props;
+---
+<div
+  class={flip ? 'wavetop' : 'wavebot'}
+  style={bg ? `background:${bg}` : undefined}
+  aria-hidden="true"
+>
+  <svg viewBox="0 0 1440 64" preserveAspectRatio="none">
+    <path
+      d="M0,30 C260,64 520,0 760,28 C1000,56 1240,10 1440,36 L1440,64 L0,64 Z"
+      fill={fill}
+      transform={flip ? 'scale(1,-1) translate(0,-64)' : undefined}
+    />
+  </svg>
+</div>
+<style>
+  .wavetop, .wavebot { line-height: 0; }
+  .wavetop { margin-bottom: -1px; }
+  .wavebot { margin-top: -1px; }
+  svg { display: block; width: 100%; height: 64px; }
+</style>

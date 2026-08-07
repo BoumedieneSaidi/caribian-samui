@@ -1,0 +1,111 @@
+---
+import Base from '../layouts/Base.astro';
+import Wave from '../components/Wave.astro';
+import CarCard from '../components/CarCard.astro';
+import data from '../data/vehicules.json';
+
+const WA = 'https://wa.me/66806853817';
+const waScooter = (nom: string) =>
+  `${WA}?text=${encodeURIComponent(`Bonjour ! Je souhaite réserver un scooter ${nom}. Mes dates : `)}`;
+---
+<Base
+  title="Nos véhicules — Caribian, SUV et scooters | Caribian Rental Samui"
+  description="15 véhicules uniques à louer à Koh Samui : Caribian mythiques, Ford Ecosport, Honda CRV, Ford Ranger et 6 scooters. Prix transparents, assurance incluse."
+  path="/vehicules/"
+>
+  <header class="page-head">
+    <span class="kicker">Notre flotte</span>
+    <h1>15 véhicules, 15 personnalités</h1>
+    <p>
+      Caribian Suzuki pour l'aventure, SUV automatiques pour la famille, scooters pour filer
+      entre les plages. Tous entretenus par nos soins, tous assurés.
+    </p>
+  </header>
+  <Wave fill="#fbf5ea" bg="#084c54" />
+
+  <section>
+    <div class="in" style="padding-top:40px">
+      <span class="kicker rv">Voitures</span>
+      <h2 class="rv" style="--d:.08s">Les Caribian &amp; les familiales</h2>
+      <p class="lead rv" style="--d:.14s">
+        Prix moyenne saison, par jour, dégressifs dès 7 jours de location.
+        La <a href="/tarifs/">grille complète par saison</a> est publique.
+      </p>
+      <div class="fleet">
+        {data.voitures.map((car, i) => <CarCard car={car} delay={(i % 3) * 0.08} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="deep">
+    <Wave fill="#fbf5ea" flip />
+    <div class="in">
+      <span class="kicker rv">Scooters</span>
+      <h2 class="rv" style="--d:.08s">Deux roues, toute l'île</h2>
+      <p class="lead rv" style="--d:.14s">
+        Deux casques fournis avec chaque scooter — le port du casque est obligatoire
+        et contrôlé à Koh Samui.
+      </p>
+      <div class="scoots">
+        {data.scooters.map((s, i) => (
+          <article class="scoot rv" style={`--d:${(i % 3) * 0.08}s`}>
+            <div class="im">
+              <img src={`/img/${s.images[0]}.jpg`} alt={`${s.nom} à louer à Koh Samui`} width="900" height="600" loading="lazy" />
+            </div>
+            <div class="bd">
+              <span class="tag">{s.badge}</span>
+              <h3>{s.nom}</h3>
+              <p class="hook">{s.accroche}</p>
+              <div class="row">
+                <div class="px">
+                  <b>{s.prixJour} ฿</b><small> /jour</small>
+                  <em>{s.prixMois.toLocaleString('fr-FR')} ฿/mois · caution {s.caution.toLocaleString('fr-FR')} ฿</em>
+                </div>
+                <a class="rsv" href={waScooter(s.nom)} target="_blank" rel="noopener">Réserver</a>
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+    <Wave fill="#fbf5ea" bg="#084c54" />
+  </section>
+
+  <section>
+    <div class="in" style="text-align:center">
+      <h2 class="rv">Un doute sur le bon véhicule ?</h2>
+      <p class="lead rv" style="--d:.08s; margin:0 auto 28px">
+        Dites-nous combien vous êtes et ce que vous voulez voir : on vous conseille en quelques minutes.
+      </p>
+      <a class="btn-sun rv" style="--d:.16s" href={`${WA}?text=${encodeURIComponent('Bonjour ! Pouvez-vous me conseiller un véhicule ? Nous sommes ')}`} target="_blank" rel="noopener">
+        💬 Demander conseil sur WhatsApp
+      </a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .scoots{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:22px;
+    margin-top:38px; }
+  .scoot{ background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14);
+    border-radius:var(--radius); overflow:hidden; transition:transform .3s, background .3s; }
+  .scoot:hover{ transform:translateY(-6px); background:rgba(255,255,255,.1); }
+  .scoot .im{ height:190px; overflow:hidden; background:#fff; }
+  .scoot .im img{ width:100%; height:100%; object-fit:cover;
+    transition:transform .6s cubic-bezier(.2,.7,.3,1); }
+  .scoot:hover .im img{ transform:scale(1.07); }
+  .scoot .bd{ padding:18px 20px 20px; }
+  .scoot .tag{ font-size:.66rem; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--turq-soft); }
+  .scoot h3{ font-family:var(--disp); margin:4px 0 6px; font-size:1.15rem; }
+  .scoot .hook{ font-size:.85rem; color:#c2e2e6; margin:0 0 16px; }
+  .scoot .row{ display:flex; justify-content:space-between; align-items:flex-end; gap:12px; }
+  .scoot .px b{ font-family:var(--disp); font-size:1.4rem; color:var(--sun);
+    font-variant-numeric:tabular-nums; }
+  .scoot .px small{ color:#a8d6db; }
+  .scoot .px em{ display:block; font-style:normal; font-size:.72rem; color:#a8d6db; margin-top:2px; }
+  .scoot .rsv{ background:#fff; color:var(--lagoon-deep); text-decoration:none; font-size:.78rem;
+    font-weight:800; padding:9px 17px; border-radius:999px; white-space:nowrap;
+    transition:background .2s, color .2s, transform .2s; }
+  .scoot .rsv:hover{ background:var(--sun); color:#4a3305; transform:scale(1.06); }
+</style>

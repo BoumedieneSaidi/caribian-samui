@@ -1,0 +1,58 @@
+---
+import Base from '../layouts/Base.astro';
+import Wave from '../components/Wave.astro';
+---
+<Base
+  title="Politique de confidentialité | Caribian Rental Samui"
+  description="Comment Caribian Rental Samui collecte, utilise et protège vos données personnelles lors d'une réservation ou d'une visite du site."
+  path="/confidentialite/"
+>
+  <header class="page-head">
+    <span class="kicker">Vos données</span>
+    <h1>Politique de confidentialité</h1>
+    <p>En vigueur depuis le 1er juin 2023 — mise à jour avec la refonte du site.</p>
+  </header>
+  <Wave fill="#fbf5ea" bg="#084c54" />
+
+  <section>
+    <div class="in legal">
+      <div class="card rv">
+        <h2>Ce que nous collectons</h2>
+        <p>Lors d'une réservation : votre nom, vos coordonnées, les informations de paiement et
+        les détails de votre permis de conduire — le strict nécessaire pour traiter votre location.
+        Lors de la navigation : des données techniques anonymes (adresse IP, navigateur, pages
+        visitées) qui nous aident à améliorer le site.</p>
+      </div>
+      <div class="card rv">
+        <h2>Ce que nous en faisons</h2>
+        <p>Traiter vos réservations, vous assister pendant le séjour et vous communiquer les
+        informations importantes. Avec votre accord uniquement, vous envoyer nos offres —
+        désinscription possible à tout moment. Nous pouvons divulguer des informations si la
+        loi l'exige.</p>
+      </div>
+      <div class="card rv">
+        <h2>Sécurité &amp; conservation</h2>
+        <p>Vos données sont protégées par des mesures conformes aux standards du secteur et
+        conservées uniquement le temps nécessaire aux finalités décrites ici, sauf obligation
+        légale plus longue. Aucune transmission sur internet n'étant infaillible, nous ne
+        pouvons garantir une sécurité absolue.</p>
+      </div>
+      <div class="card rv">
+        <h2>Vos droits</h2>
+        <p>Vous pouvez accéder à vos informations, les corriger ou les supprimer à tout moment.
+        Écrivez-nous à <a href="mailto:caribianrental.samui@gmail.com">caribianrental.samui@gmail.com</a>.
+        Les sites tiers vers lesquels nous pointons (Facebook, WhatsApp…) appliquent leurs
+        propres politiques.</p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .legal{ display:grid; gap:22px; max-width:760px; padding-top:44px; }
+  .card{ background:#fff; border-radius:var(--radius); padding:28px 32px;
+    box-shadow:0 8px 26px -16px rgba(10,70,80,.22); }
+  .card h2{ font-size:1.25rem; margin:0 0 10px; }
+  .card p{ margin:0; color:#3f5a61; font-size:.94rem; }
+  .card a{ color:var(--lagoon); font-weight:700; }
+</style>

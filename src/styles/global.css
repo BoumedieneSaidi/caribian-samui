@@ -1,0 +1,165 @@
+/* ============================================================
+   Caribian Rental Samui — design « Lagon »
+   ============================================================ */
+:root{
+  --lagoon:#0b6e78; --lagoon-deep:#084c54; --turq:#12aebb; --turq-soft:#7edde5;
+  --coral:#ff6b57; --sun:#ffc33d; --palm:#2e9e6b;
+  --sand:#fbf5ea; --sand-deep:#f3ead7; --ink:#10333b; --soft:#587a82;
+  --disp:'Futura','Avenir Next','Trebuchet MS',system-ui,sans-serif;
+  --body:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+  --radius:22px;
+}
+
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{ margin:0; background:var(--sand); color:var(--ink); font-family:var(--body);
+  line-height:1.55; overflow-x:hidden; }
+img{ max-width:100%; display:block; }
+a{ color:inherit; }
+:focus-visible{ outline:3px solid var(--turq); outline-offset:2px; border-radius:4px; }
+
+/* ---------- primitives typographiques ---------- */
+.kicker{ display:inline-block; font-size:.72rem; font-weight:800; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--lagoon); background:rgba(18,174,187,.12);
+  border-radius:999px; padding:6px 16px; }
+h1,h2{ font-family:var(--disp); font-weight:800; letter-spacing:-.015em; line-height:1.08;
+  text-wrap:balance; }
+h2{ font-size:clamp(1.8rem,4vw,2.7rem); margin:.5em 0 .35em; }
+.lead{ color:var(--soft); max-width:56ch; margin:0; font-size:1.02rem; }
+.in{ max-width:1120px; margin:0 auto; padding:84px 5vw; }
+
+/* ---------- boutons ---------- */
+.btn-sun{ display:inline-block; background:var(--sun); color:#4a3305; font-weight:800;
+  font-size:.9rem; text-decoration:none; padding:13px 28px; border-radius:999px;
+  box-shadow:0 10px 24px -8px rgba(255,171,20,.55); transition:transform .2s, box-shadow .2s; }
+.btn-sun:hover{ transform:translateY(-2px) scale(1.03); box-shadow:0 14px 30px -8px rgba(255,171,20,.7); }
+.btn-ghost{ display:inline-block; font-weight:700; font-size:.88rem; color:var(--lagoon);
+  text-decoration:none; border:2px solid var(--turq); padding:10px 22px; border-radius:999px;
+  transition:background .2s, color .2s; white-space:nowrap; }
+.btn-ghost:hover{ background:var(--turq); color:#fff; }
+.btn-wa{ display:inline-flex; align-items:center; gap:11px; background:#fff; color:#0e6e3c;
+  font-weight:800; font-size:1rem; text-decoration:none; padding:15px 32px; border-radius:999px;
+  box-shadow:0 16px 38px -10px rgba(120,30,10,.45); transition:transform .2s; }
+.btn-wa:hover{ transform:translateY(-3px) scale(1.04); }
+
+/* ---------- révélations au scroll ---------- */
+.rv{ opacity:0; transform:translateY(26px);
+  transition:opacity .8s cubic-bezier(.2,.7,.3,1), transform .8s cubic-bezier(.2,.7,.3,1);
+  transition-delay:var(--d,0s); }
+.rv.on{ opacity:1; transform:none; }
+.pop{ opacity:0; transform:scale(.88);
+  transition:opacity .6s ease, transform .6s cubic-bezier(.34,1.56,.64,1);
+  transition-delay:var(--d,0s); }
+.pop.on{ opacity:1; transform:none; }
+
+/* ---------- navigation ---------- */
+.nav{ position:fixed; top:0; left:0; right:0; z-index:50; display:flex; align-items:center;
+  justify-content:space-between; padding:14px 5vw;
+  transition:background .35s, box-shadow .35s, padding .35s; }
+.nav.solid{ background:rgba(251,245,234,.86); backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px); box-shadow:0 4px 24px -12px rgba(8,60,68,.25); padding:10px 5vw; }
+.nav .logo{ font-family:var(--disp); font-weight:800; font-size:1.12rem; text-decoration:none;
+  display:flex; align-items:center; gap:9px; color:var(--nav-fg,#fff); transition:color .35s; }
+.nav .sunmark{ width:26px; height:26px; border-radius:50%; flex:none;
+  background:radial-gradient(circle at 35% 35%, var(--sun), var(--coral));
+  box-shadow:0 0 0 3px rgba(255,195,61,.3); }
+.nav.solid{ --nav-fg:var(--ink); }
+.nav .links{ display:flex; gap:26px; font-size:.86rem; font-weight:600; color:var(--nav-fg,#fff);
+  transition:color .35s; }
+.nav .links a{ text-decoration:none; position:relative; }
+.nav .links a::after{ content:''; position:absolute; left:0; right:100%; bottom:-5px; height:2.5px;
+  background:var(--sun); border-radius:2px; transition:right .28s; }
+.nav .links a:hover::after, .nav .links a[aria-current="page"]::after{ right:0; }
+.nav .cta{ background:var(--sun); color:#4a3305; font-weight:800; font-size:.85rem;
+  text-decoration:none; padding:10px 20px; border-radius:999px;
+  box-shadow:0 6px 18px -6px rgba(255,171,20,.55); transition:transform .2s, box-shadow .2s; }
+.nav .cta:hover{ transform:translateY(-2px) scale(1.03); }
+.nav.on-light{ --nav-fg:var(--ink); }
+
+/* ---------- en-tête de page intérieure ---------- */
+.page-head{ background:linear-gradient(180deg, var(--lagoon) 0%, var(--lagoon-deep) 100%);
+  color:#fff; padding:150px 5vw 40px; text-align:center; }
+.page-head h1{ font-size:clamp(2rem,5vw,3.2rem); margin:0 0 8px; }
+.page-head p{ color:#bfe3e7; max-width:56ch; margin:0 auto; }
+.page-head .kicker{ color:var(--turq-soft); background:rgba(126,221,229,.14); }
+.wave-under{ display:block; width:100%; height:64px; margin-top:-1px; }
+
+/* ---------- footer ---------- */
+footer{ background:var(--ink); color:#9fc3c9; font-size:.84rem; }
+footer .in{ padding:44px 5vw; display:flex; justify-content:space-between; gap:24px; flex-wrap:wrap; }
+footer b{ color:#fff; font-family:var(--disp); }
+footer a{ color:#cfe6ea; text-decoration:none; }
+footer a:hover{ color:#fff; text-decoration:underline; }
+footer .cols{ display:flex; gap:60px; flex-wrap:wrap; }
+footer ul{ list-style:none; margin:8px 0 0; padding:0; display:grid; gap:6px; }
+
+/* ---------- WhatsApp flottant ---------- */
+.wafloat{ position:fixed; right:22px; bottom:22px; z-index:60; width:58px; height:58px;
+  border-radius:50%; background:#22c15e; color:#fff; display:flex; align-items:center;
+  justify-content:center; text-decoration:none;
+  box-shadow:0 12px 30px -8px rgba(20,140,70,.6); }
+.wafloat svg{ width:30px; height:30px; fill:#fff; }
+.wafloat::before{ content:''; position:absolute; inset:0; border-radius:50%;
+  border:2px solid #22c15e; animation:ping 2s ease-out infinite; }
+@keyframes ping{ 0%{ transform:scale(1); opacity:.8; } 100%{ transform:scale(1.7); opacity:0; } }
+.wafloat:hover{ filter:brightness(1.08); }
+
+/* ---------- cartes véhicules ---------- */
+.fleet{ display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:24px; margin-top:40px; }
+.car{ background:#fff; border-radius:var(--radius); overflow:hidden; position:relative;
+  box-shadow:0 8px 26px -14px rgba(10,70,80,.22);
+  transition:transform .35s cubic-bezier(.2,.7,.3,1.2), box-shadow .35s; }
+.car:hover{ transform:translateY(-9px) rotate(-.5deg); box-shadow:0 26px 48px -18px rgba(10,70,80,.4); }
+.car .im{ height:180px; overflow:hidden; position:relative; }
+.car .im img{ width:100%; height:100%; object-fit:cover;
+  transition:transform .7s cubic-bezier(.2,.7,.3,1); }
+.car:hover .im img{ transform:scale(1.09) rotate(.6deg); }
+.car .badge{ position:absolute; top:14px; left:14px; z-index:2; background:#fff; border-radius:999px;
+  font-size:.68rem; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+  padding:6px 13px; box-shadow:0 4px 14px rgba(0,0,0,.18); }
+.badge.lagoon{ color:var(--lagoon); } .badge.coral{ color:var(--coral); }
+.badge.palm{ color:var(--palm); } .badge.sun{ color:#a67200; }
+.car .bd{ padding:18px 20px 20px; }
+.car h3{ font-family:var(--disp); margin:0; font-size:1.18rem; font-weight:800; letter-spacing:-.01em; }
+.car .who{ font-size:.8rem; color:var(--soft); margin-top:2px; }
+.car .foot{ display:flex; justify-content:space-between; align-items:flex-end; margin-top:16px; }
+.car .px b{ font-family:var(--disp); font-size:1.5rem; color:var(--lagoon);
+  font-variant-numeric:tabular-nums; }
+.car .px small{ display:block; color:var(--soft); font-size:.74rem; }
+.car .rsv{ background:var(--ink); color:#fff; text-decoration:none; font-size:.78rem;
+  font-weight:700; padding:9px 17px; border-radius:999px; transition:background .2s, transform .2s; }
+.car .rsv:hover{ background:var(--coral); transform:scale(1.06); }
+.car .specs{ display:flex; gap:6px; flex-wrap:wrap; margin-top:12px; }
+.car .specs i{ font-style:normal; font-size:.68rem; font-weight:600; background:var(--sand);
+  border-radius:999px; padding:4px 11px; color:#6b6046; }
+
+/* ---------- tableaux de tarifs ---------- */
+.twrap{ overflow-x:auto; border-radius:16px; box-shadow:0 8px 26px -16px rgba(10,70,80,.25); }
+table.tarifs{ width:100%; border-collapse:collapse; background:#fff; font-size:.88rem; min-width:560px; }
+table.tarifs th{ background:var(--lagoon); color:#fff; text-align:left; padding:12px 16px;
+  font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; }
+table.tarifs td{ padding:12px 16px; border-top:1px solid #efe8d8;
+  font-variant-numeric:tabular-nums; }
+table.tarifs tr td:first-child{ font-weight:700; }
+table.tarifs .hl{ color:var(--lagoon); font-weight:800; }
+table.tarifs tbody tr:hover{ background:var(--sand); }
+
+/* ---------- section lagon profond ---------- */
+.deep{ background:linear-gradient(180deg, var(--lagoon) 0%, var(--lagoon-deep) 100%); color:#fff; }
+.deep .kicker{ color:var(--turq-soft); background:rgba(126,221,229,.14); }
+.deep .lead{ color:#bfe3e7; }
+
+/* ---------- divers ---------- */
+.mocklink{ cursor:pointer; }
+
+@media (max-width:780px){
+  .nav .links{ display:none; }
+  .in{ padding:64px 6vw; }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .rv,.pop{ opacity:1; transform:none; transition:none; }
+  .wafloat::before{ animation:none; }
+  html{ scroll-behavior:auto; }
+  *{ animation-duration:.01ms !important; animation-iteration-count:1 !important; }
+}

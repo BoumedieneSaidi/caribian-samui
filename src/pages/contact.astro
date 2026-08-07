@@ -1,0 +1,91 @@
+---
+import Base from '../layouts/Base.astro';
+import Wave from '../components/Wave.astro';
+
+const WA = 'https://wa.me/66806853817';
+const waText = encodeURIComponent('Bonjour Caribian Rental ! ');
+---
+<Base
+  title="Contact — réponse en quelques minutes | Caribian Rental Samui"
+  description="Contactez Caribian Rental Samui : WhatsApp +66 80 685 3817 (prioritaire), Line, téléphone ou e-mail. Réponse rapide 7j/7 pour toute réservation à Koh Samui."
+  path="/contact/"
+>
+  <header class="page-head">
+    <span class="kicker">Contact</span>
+    <h1>On répond vite. Vraiment.</h1>
+    <p>WhatsApp est notre canal prioritaire : la plupart des messages ont une réponse en quelques minutes, 7j/7.</p>
+  </header>
+  <Wave fill="#fbf5ea" bg="#084c54" />
+
+  <section>
+    <div class="in cards">
+      <a class="ch rv wa" href={`${WA}?text=${waText}`} target="_blank" rel="noopener">
+        <div class="ic">💬</div>
+        <b>WhatsApp</b>
+        <span>+66 80 685 3817</span>
+        <em>Canal prioritaire · réponse en minutes</em>
+      </a>
+      <a class="ch rv" style="--d:.08s" href="tel:+66806853817">
+        <div class="ic">📞</div>
+        <b>Téléphone &amp; Line</b>
+        <span>+66 80 685 3817</span>
+        <em>Appels et Line au même numéro</em>
+      </a>
+      <a class="ch rv" style="--d:.16s" href="mailto:caribianrental.samui@gmail.com">
+        <div class="ic">✉️</div>
+        <b>E-mail</b>
+        <span>caribianrental.samui@gmail.com</span>
+        <em>Pour les demandes détaillées</em>
+      </a>
+      <a class="ch rv" style="--d:.24s" href="https://www.facebook.com/profile.php?id=100092700151512" target="_blank" rel="noopener">
+        <div class="ic">👍</div>
+        <b>Facebook</b>
+        <span>Caribian Rental Samui</span>
+        <em>Photos de la flotte et actualités</em>
+      </a>
+    </div>
+  </section>
+
+  <section class="deep">
+    <Wave fill="#fbf5ea" flip />
+    <div class="in howto">
+      <span class="kicker rv">Pour aller vite</span>
+      <h2 class="rv" style="--d:.06s">Le message parfait pour réserver</h2>
+      <p class="lead rv" style="--d:.12s">Envoyez-nous ces quatre informations et vous aurez une réponse ferme immédiatement :</p>
+      <ol class="steps">
+        <li class="rv" style="--d:.18s"><b>Vos dates</b> d'arrivée et de départ</li>
+        <li class="rv" style="--d:.24s"><b>Le véhicule</b> qui vous fait envie (ou « conseillez-moi »)</li>
+        <li class="rv" style="--d:.3s"><b>Votre hôtel</b> ou zone de séjour, pour la livraison</li>
+        <li class="rv" style="--d:.36s"><b>Le nombre de personnes</b> qui voyagent avec vous</li>
+      </ol>
+      <a class="btn-sun rv" style="--d:.42s"
+        href={`${WA}?text=${encodeURIComponent('Bonjour ! Je veux réserver :\n· Dates : \n· Véhicule : \n· Hôtel : \n· Nous sommes : ')}`}
+        target="_blank" rel="noopener">
+        💬 Envoyer ce message pré-rempli
+      </a>
+    </div>
+    <Wave fill="#fbf5ea" bg="#084c54" />
+  </section>
+</Base>
+
+<style>
+  .cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:20px;
+    padding-top:44px; }
+  .ch{ background:#fff; border-radius:var(--radius); padding:28px 24px; text-decoration:none;
+    box-shadow:0 8px 26px -16px rgba(10,70,80,.22); display:grid; gap:3px;
+    transition:transform .3s, box-shadow .3s; }
+  .ch:hover{ transform:translateY(-6px); box-shadow:0 20px 40px -18px rgba(10,70,80,.35); }
+  .ch .ic{ font-size:1.6rem; margin-bottom:8px; }
+  .ch b{ font-family:var(--disp); font-size:1.05rem; }
+  .ch span{ color:var(--lagoon); font-weight:700; font-size:.92rem; }
+  .ch em{ font-style:normal; color:var(--soft); font-size:.78rem; }
+  .ch.wa{ outline:3px solid #22c15e33; }
+  .howto .steps{ list-style:none; counter-reset:s; padding:0; margin:24px 0 32px;
+    display:grid; gap:12px; max-width:520px; }
+  .howto .steps li{ counter-increment:s; display:flex; gap:14px; align-items:center;
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.14);
+    border-radius:14px; padding:13px 18px; font-size:.94rem; }
+  .howto .steps li::before{ content:counter(s); flex:none; width:28px; height:28px;
+    border-radius:50%; background:var(--sun); color:#4a3305; font-weight:800;
+    font-size:.85rem; display:flex; align-items:center; justify-content:center; }
+</style>
