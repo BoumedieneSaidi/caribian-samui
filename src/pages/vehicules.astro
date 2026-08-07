@@ -2,11 +2,11 @@
 import Base from '../layouts/Base.astro';
 import Wave from '../components/Wave.astro';
 import CarCard from '../components/CarCard.astro';
-import data from '../data/vehicules.json';
+import { loadFlotte } from '../lib/content';
 
 const WA = 'https://wa.me/66806853817';
-const waScooter = (nom: string) =>
-  `${WA}?text=${encodeURIComponent(`Bonjour ! Je souhaite réserver un scooter ${nom}. Mes dates : `)}`;
+const data = await loadFlotte();
+const total = data.voitures.length + data.scooters.length;
 ---
 <Base
   title="Nos véhicules — Caribian, SUV et scooters | Caribian Rental Samui"
@@ -15,7 +15,7 @@ const waScooter = (nom: string) =>
 >
   <header class="page-head">
     <span class="kicker">Notre flotte</span>
-    <h1>15 véhicules, 15 personnalités</h1>
+    <h1>{total} véhicules, {total} personnalités</h1>
     <p>
       Caribian Suzuki pour l'aventure, SUV automatiques pour la famille, scooters pour filer
       entre les plages. Tous entretenus par nos soins, tous assurés.
@@ -50,7 +50,7 @@ const waScooter = (nom: string) =>
         {data.scooters.map((s, i) => (
           <article class="scoot rv" style={`--d:${(i % 3) * 0.08}s`}>
             <div class="im">
-              <img src={`/img/${s.images[0]}.jpg`} alt={`${s.nom} à louer à Koh Samui`} width="900" height="600" loading="lazy" />
+              <img src={s.image} alt={`${s.nom} à louer à Koh Samui`} width="900" height="600" loading="lazy" />
             </div>
             <div class="bd">
               <span class="tag">{s.badge}</span>
@@ -59,9 +59,11 @@ const waScooter = (nom: string) =>
               <div class="row">
                 <div class="px">
                   <b>{s.prixJour} ฿</b><small> /jour</small>
-                  <em>{s.prixMois.toLocaleString('fr-FR')} ฿/mois · caution {s.caution.toLocaleString('fr-FR')} ฿</em>
+                  <em>
+                    {s.prixMois ? `${s.prixMois.toLocaleString('fr-FR')} ฿/mois · ` : ''}caution {s.caution.toLocaleString('fr-FR')} ฿
+                  </em>
                 </div>
-                <a class="rsv" href={waScooter(s.nom)} target="_blank" rel="noopener">Réserver</a>
+                <a class="rsv" href={`/reserver/?v=${s.slug}`}>Réserver</a>
               </div>
             </div>
           </article>

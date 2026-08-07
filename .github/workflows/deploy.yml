@@ -1,0 +1,50 @@
+name: Déploiement GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    # 20h00 UTC = 3h du matin à Koh Samui : le site se reconstruit chaque nuit
+    # pour refléter les modifications faites dans le dashboard admin.
+    - cron: '0 20 * * *'
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Build (contenu tiré de Supabase)
+        run: npm run build
+
+      - name: Préfixe des URLs pour le sous-chemin GitHub Pages
+        run: |
+          find dist \( -name '*.html' -o -name '*.css' \) -print0 | xargs -0 sed -i \
+            -e 's|href="/|href="/caribian-samui/|g' \
+            -e 's|src="/|src="/caribian-samui/|g' \
+            -e "s|url('/|url('/caribian-samui/|g" \
+            -e 's|url(/|url(/caribian-samui/|g'
+          touch dist/.nojekyll
+
+      - name: Publication sur gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
+          force_orphan: true

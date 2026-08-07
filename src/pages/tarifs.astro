@@ -1,48 +1,65 @@
 ---
 import Base from '../layouts/Base.astro';
 import Wave from '../components/Wave.astro';
+import { loadGrilles, type GrilleContent } from '../lib/content';
 
 const WA = 'https://wa.me/66806853817';
 
-// Grilles officielles 2026 (extraites des PDF de tarifs du loueur)
-const saisonsVoitures = [
+// Grilles chargées depuis Supabase (éditées via /admin). Repli : grilles 2026 embarquées.
+const fromDb = await loadGrilles();
+
+const FALLBACK: GrilleContent[] = [
+  { nom: 'Caribian 2+2', type: 'voiture', caution: 10000, prix: { '1-6': { PIK: 1500, HAUTE: 1200, MOYENNE: 1000, BASSE: 800 }, '7-13': { PIK: 1400, HAUTE: 1100, MOYENNE: 900, BASSE: 700 }, '14-20': { PIK: 1100, HAUTE: 900, MOYENNE: 700, BASSE: 600 }, '21-29': { PIK: null, HAUTE: 800, MOYENNE: 600, BASSE: 500 }, mois: { PIK: null, HAUTE: 18000, MOYENNE: 16000, BASSE: 14000 } } },
+  { nom: 'Caribian + (5 places)', type: 'voiture', caution: 10000, prix: { '1-6': { PIK: 1600, HAUTE: 1300, MOYENNE: 1100, BASSE: 900 }, '7-13': { PIK: 1500, HAUTE: 1200, MOYENNE: 1000, BASSE: 800 }, '14-20': { PIK: 1300, HAUTE: 1000, MOYENNE: 800, BASSE: 700 }, '21-29': { PIK: null, HAUTE: 900, MOYENNE: 700, BASSE: 600 }, mois: { PIK: null, HAUTE: 19000, MOYENNE: 17000, BASSE: 15000 } } },
+  { nom: 'Ford Ecosport', type: 'voiture', caution: 10000, prix: { '1-6': { PIK: 1700, HAUTE: 1400, MOYENNE: 1200, BASSE: 1000 }, '7-13': { PIK: 1600, HAUTE: 1300, MOYENNE: 1100, BASSE: 900 }, '14-20': { PIK: 1400, HAUTE: 1100, MOYENNE: 900, BASSE: 800 }, '21-29': { PIK: null, HAUTE: 1000, MOYENNE: 800, BASSE: 700 }, mois: { PIK: null, HAUTE: 20000, MOYENNE: 18000, BASSE: 16000 } } },
+  { nom: 'Honda CRV', type: 'voiture', caution: 10000, prix: { '1-6': { PIK: 1600, HAUTE: 1300, MOYENNE: 1100, BASSE: 900 }, '7-13': { PIK: 1500, HAUTE: 1200, MOYENNE: 1000, BASSE: 800 }, '14-20': { PIK: 1300, HAUTE: 1000, MOYENNE: 800, BASSE: 700 }, '21-29': { PIK: null, HAUTE: 900, MOYENNE: 700, BASSE: 600 }, mois: { PIK: null, HAUTE: 19000, MOYENNE: 17000, BASSE: 15000 } } },
+  { nom: 'Ford Ranger', type: 'voiture', caution: 10000, prix: { '1-6': { PIK: 2000, HAUTE: 2000, MOYENNE: 2000, BASSE: 2000 }, '7-13': { PIK: 1800, HAUTE: 1800, MOYENNE: 1800, BASSE: 1800 }, '14-20': { PIK: 1600, HAUTE: 1600, MOYENNE: 1600, BASSE: 1600 }, '21-29': { PIK: 1400, HAUTE: 1400, MOYENNE: 1400, BASSE: 1400 }, mois: { PIK: 30000, HAUTE: 30000, MOYENNE: 30000, BASSE: 30000 } } },
+  { nom: 'Honda ADV 350', type: 'scooter', caution: 10000, prix: { '1-6': { PIK: 1000, HAUTE: 900, BASSE: 600 }, '7-13': { PIK: 950, HAUTE: 850, BASSE: 500 }, '14-20': { PIK: 900, HAUTE: 800, BASSE: 400 }, '21-29': { PIK: null, HAUTE: 750, BASSE: 350 }, mois: { PIK: null, HAUTE: 15000, BASSE: 10000 } } },
+  { nom: 'Honda Forza 350', type: 'scooter', caution: 10000, prix: { '1-6': { PIK: 1000, HAUTE: 900, BASSE: 600 }, '7-13': { PIK: 950, HAUTE: 850, BASSE: 500 }, '14-20': { PIK: 900, HAUTE: 800, BASSE: 400 }, '21-29': { PIK: null, HAUTE: 750, BASSE: 350 }, mois: { PIK: null, HAUTE: 15000, BASSE: 10000 } } },
+  { nom: 'Yamaha XMAX 300', type: 'scooter', caution: 10000, prix: { '1-6': { PIK: 800, HAUTE: 700, BASSE: 500 }, '7-13': { PIK: 750, HAUTE: 650, BASSE: 450 }, '14-20': { PIK: 700, HAUTE: 600, BASSE: 400 }, '21-29': { PIK: null, HAUTE: 550, BASSE: 350 }, mois: { PIK: null, HAUTE: 12000, BASSE: 8000 } } },
+  { nom: 'Honda ADV 160', type: 'scooter', caution: 5000, prix: { '1-6': { PIK: 550, HAUTE: 450, BASSE: 350 }, '7-13': { PIK: 500, HAUTE: 400, BASSE: 300 }, '14-20': { PIK: 450, HAUTE: 350, BASSE: 250 }, '21-29': { PIK: null, HAUTE: 300, BASSE: 220 }, mois: { PIK: null, HAUTE: 7000, BASSE: 5000 } } },
+  { nom: 'Honda Click 160', type: 'scooter', caution: 5000, prix: { '1-6': { PIK: 450, HAUTE: 350, BASSE: 300 }, '7-13': { PIK: 400, HAUTE: 300, BASSE: 250 }, '14-20': { PIK: 350, HAUTE: 250, BASSE: 200 }, '21-29': { PIK: null, HAUTE: 200, BASSE: 180 }, mois: { PIK: null, HAUTE: 5000, BASSE: 4000 } } },
+  { nom: 'Honda Click 125', type: 'scooter', caution: 3000, prix: { '1-6': { PIK: 350, HAUTE: 250, BASSE: 200 }, '7-13': { PIK: 280, HAUTE: 200, BASSE: 180 }, '14-20': { PIK: 230, HAUTE: 180, BASSE: 150 }, '21-29': { PIK: null, HAUTE: 150, BASSE: 130 }, mois: { PIK: null, HAUTE: 4000, BASSE: 3000 } } },
+];
+
+const grilles = fromDb ?? FALLBACK;
+const voitures = grilles.filter((g) => g.type === 'voiture');
+const scooters = grilles.filter((g) => g.type === 'scooter');
+
+const SAISONS_V = ['PIK', 'HAUTE', 'MOYENNE', 'BASSE'];
+const SAISONS_S = ['PIK', 'HAUTE', 'BASSE'];
+const DUREES: [string, string][] = [
+  ['1-6', '1 à 6 jours'], ['7-13', '7 à 13 jours'], ['14-20', '14 à 20 jours'],
+  ['21-29', '21 à 29 jours'], ['mois', '1 mois'],
+];
+const legendesVoitures = [
   { nom: 'PIK', periode: '21 déc → 7 janv' },
   { nom: 'HAUTE', periode: '8 janv → 31 mars · 16 juil → 31 août' },
   { nom: 'MOYENNE', periode: '1 avr → 15 mai · sept-nov · 1 → 20 déc' },
   { nom: 'BASSE', periode: '16 mai → 15 juil' },
 ];
-const voitures = [
-  { nom: 'Caribian 2+2', prix: [[1500,1200,1000,800],[1400,1100,900,700],[1100,900,700,600],[null,800,600,500]], mois: [null,18000,16000,14000] },
-  { nom: 'Caribian + (5 places)', prix: [[1600,1300,1100,900],[1500,1200,1000,800],[1300,1000,800,700],[null,900,700,600]], mois: [null,19000,17000,15000] },
-  { nom: 'Ford Ecosport', prix: [[1700,1400,1200,1000],[1600,1300,1100,900],[1400,1100,900,800],[null,1000,800,700]], mois: [null,20000,18000,16000] },
-  { nom: 'Honda CRV', prix: [[1600,1300,1100,900],[1500,1200,1000,800],[1300,1000,800,700],[null,900,700,600]], mois: [null,19000,17000,15000] },
-];
-const ranger = { prix: [2000,1800,1600,1400], mois: 30000 };
-const durees = ['1 à 6 jours','7 à 13 jours','14 à 20 jours','21 à 29 jours'];
-
-const saisonsScooters = [
+const legendesScooters = [
   { nom: 'PIK', periode: '21 déc → 7 janv' },
   { nom: 'HAUTE', periode: '8 janv → 15 avr · 16 juil → 31 août' },
   { nom: 'BASSE', periode: '16 avr → 15 juil · sept-nov · 1 → 20 déc' },
 ];
-const scooters = [
-  { nom: 'Honda ADV 350', caution: 10000, prix: [[1000,900,600],[950,850,500],[900,800,400],[null,750,350]], mois: [null,15000,10000] },
-  { nom: 'Honda Forza 350', caution: 10000, prix: [[1000,900,600],[950,850,500],[900,800,400],[null,750,350]], mois: [null,15000,10000] },
-  { nom: 'Yamaha XMAX 300', caution: 10000, prix: [[800,700,500],[750,650,450],[700,600,400],[null,550,350]], mois: [null,12000,8000] },
-  { nom: 'Honda ADV 160', caution: 5000, prix: [[550,450,350],[500,400,300],[450,350,250],[null,300,220]], mois: [null,7000,5000] },
-  { nom: 'Honda Click 160', caution: 5000, prix: [[450,350,300],[400,300,250],[350,250,200],[null,200,180]], mois: [null,5000,4000] },
-  { nom: 'Honda Click 125', caution: 3000, prix: [[350,250,200],[280,200,180],[230,180,150],[null,150,130]], mois: [null,4000,3000] },
-];
 
-const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('fr-FR'));
+const fmt = (n: number | null | undefined) =>
+  n === null || n === undefined ? '—' : `${n.toLocaleString('fr-FR')} ฿`;
+/** Vrai si la grille a le même prix sur toutes les saisons (ex. Ford Ranger). */
+const tarifUnique = (g: GrilleContent) =>
+  DUREES.every(([d]) => {
+    const vals = SAISONS_V.map((s) => g.prix[d]?.[s]).filter((x) => x !== undefined);
+    return vals.every((x) => x === vals[0]);
+  });
 ---
 <Base
-  title="Tarifs 2026 — grilles complètes par saison | Caribian Rental Samui"
+  title="Tarifs — grilles complètes par saison | Caribian Rental Samui"
   description="Tous nos prix de location à Koh Samui, publics et sans astérisque : voitures et scooters, par saison et par durée. Caution et franchise annoncées d'avance."
   path="/tarifs/"
 >
   <header class="page-head">
-    <span class="kicker">Tarifs 2026</span>
+    <span class="kicker">Tarifs</span>
     <h1>Des prix sans astérisque</h1>
     <p>
       Toute la grille, en bahts, par saison et par durée. Ce que vous voyez ici est
@@ -55,58 +72,43 @@ const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('fr-FR'
     <div class="in" style="padding-top:44px">
       <span class="kicker rv">Voitures</span>
       <h2 class="rv" style="--d:.06s">Caribian, SUV &amp; pick-up</h2>
-      <p class="lead rv" style="--d:.12s">Caution pour toutes les voitures : 10 000 ฿, restituée au retour.</p>
-
       <div class="legend rv" style="--d:.16s">
-        {saisonsVoitures.map((s) => (
-          <span><b>{s.nom}</b> {s.periode}</span>
-        ))}
+        {legendesVoitures.map((s) => <span><b>{s.nom}</b> {s.periode}</span>)}
       </div>
 
       {voitures.map((v, vi) => (
         <div class="bloc rv" style={`--d:${0.06 * (vi % 2)}s`}>
-          <h3>{v.nom}</h3>
+          <h3>{v.nom} <em>caution {v.caution.toLocaleString('fr-FR')} ฿</em></h3>
           <div class="twrap">
-            <table class="tarifs">
-              <thead>
-                <tr>
-                  <th>Durée</th>
-                  {saisonsVoitures.map((s) => <th>{s.nom}</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                {durees.map((d, di) => (
-                  <tr>
-                    <td>{d}</td>
-                    {v.prix[di].map((p, pi) => (
-                      <td class={pi === 3 ? 'hl' : undefined}>{fmt(p)}{p !== null && ' ฿'}</td>
-                    ))}
-                  </tr>
-                ))}
-                <tr>
-                  <td>1 mois</td>
-                  {v.mois.map((p) => <td>{p === null ? '—' : `${fmt(p)} ฿`}</td>)}
-                </tr>
-              </tbody>
-            </table>
+            {tarifUnique(v) ? (
+              <table class="tarifs">
+                <thead><tr><th>Durée</th><th>Tarif unique toutes saisons</th></tr></thead>
+                <tbody>
+                  {DUREES.map(([d, dl]) => (
+                    <tr><td>{dl}</td><td class="hl">{fmt(v.prix[d]?.PIK)}</td></tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <table class="tarifs">
+                <thead>
+                  <tr><th>Durée</th>{SAISONS_V.map((s) => <th>{s}</th>)}</tr>
+                </thead>
+                <tbody>
+                  {DUREES.map(([d, dl]) => (
+                    <tr>
+                      <td>{dl}</td>
+                      {SAISONS_V.map((s, si) => (
+                        <td class={si === 3 ? 'hl' : undefined}>{fmt(v.prix[d]?.[s])}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       ))}
-
-      <div class="bloc rv">
-        <h3>Ford Ranger « Big Red One »</h3>
-        <div class="twrap">
-          <table class="tarifs">
-            <thead><tr><th>Durée</th><th>Tarif unique toutes saisons</th></tr></thead>
-            <tbody>
-              {durees.map((d, di) => (
-                <tr><td>{d}</td><td class="hl">{fmt(ranger.prix[di])} ฿</td></tr>
-              ))}
-              <tr><td>1 mois</td><td>{fmt(ranger.mois)} ฿</td></tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -116,9 +118,7 @@ const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('fr-FR'
       <span class="kicker rv">Scooters</span>
       <h2 class="rv" style="--d:.06s">Du Click 125 au maxi-scooter</h2>
       <div class="legend onDeep rv" style="--d:.12s">
-        {saisonsScooters.map((s) => (
-          <span><b>{s.nom}</b> {s.periode}</span>
-        ))}
+        {legendesScooters.map((s) => <span><b>{s.nom}</b> {s.periode}</span>)}
       </div>
 
       <div class="scoot-grid">
@@ -128,21 +128,17 @@ const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('fr-FR'
             <div class="twrap">
               <table class="tarifs">
                 <thead>
-                  <tr><th>Durée</th>{saisonsScooters.map((x) => <th>{x.nom}</th>)}</tr>
+                  <tr><th>Durée</th>{SAISONS_S.map((x) => <th>{x}</th>)}</tr>
                 </thead>
                 <tbody>
-                  {durees.map((d, di) => (
+                  {DUREES.map(([d, dl]) => (
                     <tr>
-                      <td>{d}</td>
-                      {s.prix[di].map((p, pi) => (
-                        <td class={pi === 2 ? 'hl' : undefined}>{fmt(p)}{p !== null && ' ฿'}</td>
+                      <td>{dl}</td>
+                      {SAISONS_S.map((x, xi) => (
+                        <td class={xi === 2 ? 'hl' : undefined}>{fmt(s.prix[d]?.[x])}</td>
                       ))}
                     </tr>
                   ))}
-                  <tr>
-                    <td>1 mois</td>
-                    {s.mois.map((p) => <td>{p === null ? '—' : `${fmt(p)} ฿`}</td>)}
-                  </tr>
                 </tbody>
               </table>
             </div>
@@ -164,9 +160,13 @@ const fmt = (n: number | null) => (n === null ? '—' : n.toLocaleString('fr-FR'
         <div class="fact rv" style="--d:.18s"><b>Non inclus</b>Essence (plein rendu = plein reçu), livraison hors conditions.</div>
       </div>
       <div style="text-align:center; margin-top:36px">
-        <a class="btn-sun rv" href={`${WA}?text=${encodeURIComponent('Bonjour ! Pouvez-vous me faire un devis ? Mes dates : ')}`} target="_blank" rel="noopener">
-          💬 Demander un devis précis
-        </a>
+        <a class="btn-sun rv" href="/reserver/">Vérifier une disponibilité →</a>
+        <p class="rv" style="--d:.1s; margin-top:14px">
+          <a href={`${WA}?text=${encodeURIComponent('Bonjour ! Pouvez-vous me faire un devis ? Mes dates : ')}`}
+            target="_blank" rel="noopener" style="color:var(--lagoon); font-weight:700">
+            ou demandez un devis sur WhatsApp
+          </a>
+        </p>
       </div>
     </div>
   </section>

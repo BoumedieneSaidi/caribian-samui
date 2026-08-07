@@ -1,33 +1,19 @@
 ---
-/** Carte véhicule (voiture) alimentée par src/data/vehicules.json */
+/** Carte véhicule (voiture) — contenu chargé depuis Supabase au build (voir lib/content.ts). */
+import type { CarContent } from '../lib/content';
+
 interface Props {
-  car: {
-    slug: string;
-    nom: string;
-    famille: string;
-    badge: string;
-    badgeColor: string;
-    places: string;
-    transmission: string;
-    extra?: string;
-    prixJour: number;
-    prixJourEur: number;
-    images: string[];
-  };
+  car: CarContent;
   delay?: number;
   loading?: 'lazy' | 'eager';
 }
 const { car, delay = 0, loading = 'lazy' } = Astro.props;
-const WA = 'https://wa.me/66806853817';
-const waText = encodeURIComponent(
-  `Bonjour ! Je souhaite réserver ${car.nom} (${car.famille}). Mes dates : `
-);
 ---
 <article class="car rv" style={`--d:${delay}s`}>
   <div class="im">
-    <span class={`badge ${car.badgeColor}`}>{car.badge}</span>
+    {car.badge && <span class={`badge ${car.badgeColor}`}>{car.badge}</span>}
     <img
-      src={`/img/${car.images[0]}.jpg`}
+      src={car.image}
       alt={`${car.famille} ${car.nom} à louer chez Caribian Rental Samui`}
       width="900"
       height="600"
@@ -44,9 +30,9 @@ const waText = encodeURIComponent(
     <div class="foot">
       <div class="px">
         <b>{car.prixJour.toLocaleString('fr-FR')} ฿</b>
-        <small>par jour · {car.prixJourEur} €</small>
+        <small>par jour{car.prixJourEur ? ` · ${car.prixJourEur} €` : ''}</small>
       </div>
-      <a class="rsv" href={`${WA}?text=${waText}`} target="_blank" rel="noopener">Réserver</a>
+      <a class="rsv" href={`/reserver/?v=${car.slug}`}>Réserver</a>
     </div>
   </div>
 </article>

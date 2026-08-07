@@ -1,0 +1,227 @@
+---
+import Base from '../layouts/Base.astro';
+import Wave from '../components/Wave.astro';
+---
+<Base
+  title="Réserver un véhicule — disponibilité en direct | Caribian Rental Samui"
+  description="Choisissez vos dates, voyez la disponibilité réelle du véhicule et envoyez votre demande de réservation en deux minutes. Acompte de 1 000 THB seulement."
+  path="/reserver/"
+>
+  <header class="page-head">
+    <span class="kicker">Réservation</span>
+    <h1>Réservez en deux minutes</h1>
+    <p>Disponibilité vérifiée en direct. Aucun paiement en ligne : un simple acompte de 1 000 ฿ confirme la réservation.</p>
+  </header>
+  <Wave fill="#fbf5ea" bg="#084c54" />
+
+  <section>
+    <div class="in wrap">
+      <div class="steps-track" aria-hidden="true">
+        <span class="st cur" data-st="1">1 · Dates &amp; véhicule</span>
+        <span class="st" data-st="2">2 · Vos coordonnées</span>
+        <span class="st" data-st="3">3 · Confirmation</span>
+      </div>
+
+      <!-- Étape 1 -->
+      <div class="panel" id="p1">
+        <div class="grid2">
+          <div><label for="d1">Départ</label><input type="date" id="d1" /></div>
+          <div><label for="d2">Retour</label><input type="date" id="d2" /></div>
+        </div>
+        <label for="veh">Véhicule</label>
+        <select id="veh"><option value="">Chargement des véhicules…</option></select>
+        <div id="dispo" class="dispo" role="status"></div>
+        <div id="estimation" class="estim"></div>
+        <button class="btn-sun next" id="to2" disabled>Continuer →</button>
+      </div>
+
+      <!-- Étape 2 -->
+      <div class="panel hidden" id="p2">
+        <div class="grid2">
+          <div><label for="nom">Votre nom *</label><input id="nom" autocomplete="name" /></div>
+          <div><label for="tel">Téléphone / WhatsApp *</label><input id="tel" type="tel" autocomplete="tel" placeholder="+33 6…" /></div>
+          <div><label for="email">E-mail</label><input id="email" type="email" autocomplete="email" /></div>
+          <div><label for="np">Nombre de personnes</label><input id="np" type="number" min="1" max="20" /></div>
+        </div>
+        <label for="hotel">Hôtel ou zone de séjour <span class="opt">(pour la livraison)</span></label>
+        <input id="hotel" placeholder="Ex. : hôtel à Chaweng" />
+        <label for="msg">Un message ? <span class="opt">(facultatif)</span></label>
+        <textarea id="msg" rows="3" placeholder="Vol d'arrivée, siège bébé, questions…"></textarea>
+        <div class="row2">
+          <button class="btn-back" id="back1">← Retour</button>
+          <button class="btn-sun" id="send">Envoyer ma demande</button>
+        </div>
+        <p class="fine" id="err2" role="alert"></p>
+      </div>
+
+      <!-- Étape 3 -->
+      <div class="panel hidden center" id="p3">
+        <div class="bigcheck" aria-hidden="true">✓</div>
+        <h2>Demande envoyée !</h2>
+        <p class="okmsg" id="recap"></p>
+        <p>Nous vous répondons <b>en quelques heures maximum</b>, 7j/7.
+        Pour une réponse immédiate, écrivez-nous directement :</p>
+        <a class="btn-wa" id="wa3" href="#" target="_blank" rel="noopener">💬 WhatsApp · +66 80 685 3817</a>
+      </div>
+
+      <aside class="reassure">
+        <span>🛡️ Assurance incluse</span>
+        <span>📅 Annulation gratuite jusqu'à 7 jours avant</span>
+        <span>💰 Acompte 1 000 ฿, le reste à la remise des clés</span>
+      </aside>
+    </div>
+  </section>
+</Base>
+
+<script>
+  import { supabase, saisonPour, trancheDuree, type Vehicule, type Tarif } from '../lib/supabase';
+
+  const $ = (id: string) => document.getElementById(id)!;
+  const d1 = $('d1') as HTMLInputElement, d2 = $('d2') as HTMLInputElement;
+  const sel = $('veh') as HTMLSelectElement;
+  const to2 = $('to2') as HTMLButtonElement;
+  let vehicules: Vehicule[] = [];
+  let tarifs: Tarif[] = [];
+  let disponible = false;
+
+  const today = new Date();
+  const iso = (dt: Date) => dt.toISOString().slice(0, 10);
+  d1.min = iso(today); d2.min = iso(today);
+  d1.value = iso(new Date(today.getTime() + 3 * 86400000));
+  d2.value = iso(new Date(today.getTime() + 10 * 86400000));
+
+  async function init() {
+    const [v, t] = await Promise.all([
+      supabase.from('vehicules').select('*').eq('actif', true).order('ordre'),
+      supabase.from('tarifs').select('*'),
+    ]);
+    vehicules = (v.data ?? []) as Vehicule[];
+    tarifs = (t.data ?? []) as Tarif[];
+    const want = new URLSearchParams(location.search).get('v');
+    sel.innerHTML = ['<option value="">— Choisissez un véhicule —</option>',
+      '<optgroup label="Voitures">',
+      ...vehicules.filter((x) => x.categorie === 'voiture').map(opt),
+      '</optgroup><optgroup label="Scooters">',
+      ...vehicules.filter((x) => x.categorie === 'scooter').map(opt),
+      '</optgroup>'].join('');
+    if (want && vehicules.some((x) => x.slug === want)) sel.value = want;
+    check();
+  }
+  const opt = (x: Vehicule) =>
+    `<option value="${x.slug}" ${''}>${x.nom} — ${x.famille} (${x.prix_jour} ฿/j)</option>`;
+
+  function joursLoc(): number {
+    return Math.max(1, Math.round((+new Date(d2.value) - +new Date(d1.value)) / 86400000));
+  }
+
+  async function check() {
+    const dispo = $('dispo'), estim = $('estimation');
+    disponible = false; to2.disabled = true;
+    dispo.className = 'dispo'; dispo.textContent = ''; estim.textContent = '';
+    const v = vehicules.find((x) => x.slug === sel.value);
+    if (!v || !d1.value || !d2.value) return;
+    if (d2.value < d1.value) { dispo.className = 'dispo bad'; dispo.textContent = 'La date de retour doit suivre la date de départ.'; return; }
+    dispo.textContent = 'Vérification de la disponibilité…';
+    const { data, error } = await supabase.rpc('occupations', { v_id: v.id, d1: d1.value, d2: d2.value });
+    if (error) { dispo.className = 'dispo bad'; dispo.textContent = 'Vérification impossible — envoyez quand même, nous confirmerons.'; disponible = true; to2.disabled = false; return; }
+    if ((data ?? []).length > 0) {
+      dispo.className = 'dispo bad';
+      dispo.textContent = `😔 ${v.nom} n'est pas disponible sur ces dates. Essayez d'autres dates ou un autre véhicule.`;
+      return;
+    }
+    disponible = true; to2.disabled = false;
+    dispo.className = 'dispo ok';
+    dispo.textContent = `✓ ${v.nom} est disponible du ${fr(d1.value)} au ${fr(d2.value)} !`;
+
+    // Estimation indicative depuis la grille tarifaire
+    const nj = joursLoc();
+    const saison = saisonPour(new Date(d1.value), v.categorie);
+    const tranche = trancheDuree(nj);
+    const t = tarifs.find((x) => x.groupe_id === v.groupe_id && x.saison === saison && x.duree === tranche)
+      ?? tarifs.find((x) => x.groupe_id === v.groupe_id && x.saison === saison && x.duree === '1-6');
+    if (t?.prix) {
+      const total = tranche === 'mois' ? t.prix * Math.ceil(nj / 30) : t.prix * nj;
+      estim.innerHTML = `Estimation : <b>${total.toLocaleString('fr-FR')} ฿</b> pour ${nj} jour${nj > 1 ? 's' : ''}
+        <small>(saison ${saison.toLowerCase()}, ${tranche === 'mois' ? 'forfait mensuel' : t.prix.toLocaleString('fr-FR') + ' ฿/jour'} — confirmée dans notre réponse)</small>`;
+    }
+  }
+  const fr = (s: string) => new Date(s + 'T00:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
+
+  [d1, d2, sel].forEach((el) => el.addEventListener('change', check));
+
+  const show = (n: number) => {
+    [1, 2, 3].forEach((i) => {
+      $(`p${i}`).classList.toggle('hidden', i !== n);
+      document.querySelector(`[data-st="${i}"]`)?.classList.toggle('cur', i <= n);
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  to2.addEventListener('click', () => { if (disponible) show(2); });
+  $('back1').addEventListener('click', () => show(1));
+
+  $('send').addEventListener('click', async () => {
+    const err = $('err2'); err.textContent = '';
+    const v = vehicules.find((x) => x.slug === sel.value)!;
+    const nom = ($('nom') as HTMLInputElement).value.trim();
+    const tel = ($('tel') as HTMLInputElement).value.trim();
+    if (nom.length < 2 || tel.length < 5) { err.textContent = 'Votre nom et votre téléphone sont nécessaires pour vous répondre.'; return; }
+    ($('send') as HTMLButtonElement).disabled = true;
+    const { error } = await supabase.from('reservations').insert({
+      vehicule_id: v.id,
+      date_debut: d1.value,
+      date_fin: d2.value,
+      client_nom: nom,
+      client_tel: tel,
+      client_email: ($('email') as HTMLInputElement).value.trim() || null,
+      hotel: ($('hotel') as HTMLInputElement).value.trim() || null,
+      nb_personnes: Number(($('np') as HTMLInputElement).value) || null,
+      message: ($('msg') as HTMLTextAreaElement).value.trim() || null,
+    });
+    ($('send') as HTMLButtonElement).disabled = false;
+    if (error) { err.textContent = 'Envoi impossible pour le moment — contactez-nous sur WhatsApp, réponse immédiate.'; return; }
+    $('recap').innerHTML = `<b>${v.nom}</b>, du <b>${fr(d1.value)}</b> au <b>${fr(d2.value)}</b>, au nom de ${nom}.`;
+    ($('wa3') as HTMLAnchorElement).href =
+      `https://wa.me/66806853817?text=${encodeURIComponent(`Bonjour ! Je viens d'envoyer une demande de réservation pour ${v.nom} (${fr(d1.value)} → ${fr(d2.value)}) au nom de ${nom}.`)}`;
+    show(3);
+  });
+
+  init();
+</script>
+
+<style>
+  .wrap{ max-width:640px; padding-top:40px; }
+  .steps-track{ display:flex; gap:8px; margin-bottom:22px; }
+  .st{ flex:1; text-align:center; font-size:.72rem; font-weight:800; color:var(--soft);
+    padding:8px 4px; border-bottom:3.5px solid var(--sand-deep); }
+  .st.cur{ color:var(--lagoon); border-bottom-color:var(--turq); }
+  .panel{ background:#fff; border-radius:var(--radius); padding:26px 28px;
+    box-shadow:0 12px 34px -18px rgba(10,70,80,.3); }
+  .panel.center{ text-align:center; }
+  .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:0 16px; }
+  label{ display:block; font-size:.72rem; font-weight:800; color:var(--soft);
+    text-transform:uppercase; letter-spacing:.08em; margin:14px 0 5px; }
+  label .opt{ text-transform:none; letter-spacing:0; font-weight:600; }
+  input, select, textarea{ font:inherit; width:100%; padding:12px 14px; box-sizing:border-box;
+    border:1.5px solid var(--sand-deep); border-radius:12px; background:#fffdf8; color:var(--ink); }
+  input:focus, select:focus, textarea:focus{ outline:2px solid var(--turq); border-color:var(--turq); }
+  .dispo{ margin-top:16px; font-weight:700; font-size:.92rem; min-height:1.3em; }
+  .dispo.ok{ color:var(--palm); }
+  .dispo.bad{ color:#c23a26; }
+  .estim{ margin-top:6px; font-size:.95rem; color:var(--ink); }
+  .estim small{ display:block; color:var(--soft); font-weight:400; }
+  .next{ width:100%; margin-top:20px; border:none; cursor:pointer; text-align:center; }
+  .next:disabled{ opacity:.45; cursor:default; transform:none; box-shadow:none; }
+  .btn-sun{ cursor:pointer; border:none; }
+  .row2{ display:flex; gap:12px; margin-top:22px; align-items:center; }
+  .row2 .btn-sun{ flex:1; }
+  .btn-back{ background:none; border:none; color:var(--soft); font-weight:700; cursor:pointer;
+    font-size:.9rem; padding:10px; }
+  .fine{ color:#c23a26; font-size:.85rem; min-height:1.2em; margin:10px 0 0; }
+  .bigcheck{ width:74px; height:74px; margin:6px auto 14px; border-radius:50%; background:var(--palm);
+    color:#fff; font-size:2.3rem; font-weight:800; display:flex; align-items:center; justify-content:center; }
+  .okmsg{ font-size:1.05rem; }
+  .hidden{ display:none; }
+  .reassure{ display:flex; justify-content:center; gap:10px 26px; flex-wrap:wrap; margin-top:22px;
+    font-size:.8rem; font-weight:600; color:var(--soft); }
+  @media (max-width:560px){ .grid2{ grid-template-columns:1fr; } .panel{ padding:20px; } }
+</style>

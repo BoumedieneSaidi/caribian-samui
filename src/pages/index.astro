@@ -2,17 +2,21 @@
 import Base from '../layouts/Base.astro';
 import Wave from '../components/Wave.astro';
 import CarCard from '../components/CarCard.astro';
-import data from '../data/vehicules.json';
+import { loadFlotte } from '../lib/content';
 
 const WA = 'https://wa.me/66806853817';
 const waText = encodeURIComponent('Bonjour Caribian Rental ! Je souhaite louer un véhicule à Koh Samui.');
 
-// Sélection mise en avant sur l'accueil
+// Contenu chargé depuis Supabase au moment du build (édité via /admin)
+const flotte = await loadFlotte();
 const featured = ['navy-blue', 'goldorak', 'ecosport', 'crv', 'ranger'];
 const cars = featured
-  .map((slug) => data.voitures.find((v) => v.slug === slug))
-  .filter((v) => v !== undefined);
-const xmax = data.scooters.find((s) => s.slug === 'xmax-300');
+  .map((slug) => flotte.voitures.find((v) => v.slug === slug))
+  .filter((v) => v !== undefined)
+  // si les vedettes ont été renommées/supprimées dans l'admin, prendre les premières
+  .concat(flotte.voitures.filter((v) => !featured.includes(v.slug)))
+  .slice(0, 5);
+const xmax = flotte.scooters.find((s) => s.slug === 'xmax-300') ?? flotte.scooters[0];
 
 const marquee = [
   'Navy Blue', 'Goldorak', 'Miss Pompom', 'Snow White', 'Lady Jade',
@@ -41,16 +45,16 @@ const marquee = [
         livrés à votre hôtel partout sur Koh Samui.
       </p>
       <div class="book">
-        <a class="f" href={`${WA}?text=${waText}`} target="_blank" rel="noopener">
+        <a class="f" href="/reserver/">
           <small>Départ</small><span class="v">Vos dates</span>
         </a>
-        <a class="f" href={`${WA}?text=${waText}`} target="_blank" rel="noopener">
+        <a class="f" href="/reserver/">
           <small>Retour</small><span class="v">Vos dates</span>
         </a>
         <a class="f" href="/vehicules/">
           <small>Véhicule</small><span class="v">Caribian, scooter… ▾</span>
         </a>
-        <a class="go" href={`${WA}?text=${waText}`} target="_blank" rel="noopener">C'est parti !</a>
+        <a class="go" href="/reserver/">C'est parti !</a>
       </div>
       <div class="chips">
         <span>🛡️ Assurance incluse</span>
@@ -85,26 +89,31 @@ const marquee = [
             dégressifs dès 7 jours — la grille complète est publique, sans astérisque.
           </p>
         </div>
-        <a class="btn-ghost rv" style="--d:.2s" href="/vehicules/">Toute la flotte (15) →</a>
+        <a class="btn-ghost rv" style="--d:.2s" href="/vehicules/">
+          Toute la flotte ({flotte.voitures.length + flotte.scooters.length}) →
+        </a>
       </div>
       <div class="fleet">
         {cars.map((car, i) => <CarCard car={car} delay={i * 0.08} />)}
         {xmax && (
           <article class="car rv" style={`--d:.4s`}>
             <div class="im">
-              <span class="badge palm">Agile</span>
-              <img src={`/img/${xmax.images[0]}.jpg`} alt="Yamaha XMAX 300 à louer" width="900" height="600" loading="lazy" />
+              {xmax.badge && <span class="badge palm">{xmax.badge}</span>}
+              <img src={xmax.image} alt={`${xmax.nom} à louer`} width="900" height="600" loading="lazy" />
             </div>
             <div class="bd">
               <h3>{xmax.nom}</h3>
               <div class="who">Maxi-scooter · 2 casques fournis</div>
-              <div class="specs"><i>Top-case</i><i>{xmax.prixMois.toLocaleString('fr-FR')} ฿/mois</i></div>
+              <div class="specs">
+                <i>Top-case</i>
+                {xmax.prixMois && <i>{xmax.prixMois.toLocaleString('fr-FR')} ฿/mois</i>}
+              </div>
               <div class="foot">
                 <div class="px">
                   <b>{xmax.prixJour} ฿</b>
                   <small>par jour</small>
                 </div>
-                <a class="rsv" href={`${WA}?text=${waText}`} target="_blank" rel="noopener">Réserver</a>
+                <a class="rsv" href={`/reserver/?v=${xmax.slug}`}>Réserver</a>
               </div>
             </div>
           </article>
