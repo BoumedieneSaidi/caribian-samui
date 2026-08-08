@@ -73,7 +73,10 @@ async function bootApp() {
   root.innerHTML = `
     <header class="top">
       <b>🌴 Caribian Admin</b>
-      <button id="logout">Déconnexion</button>
+      <span>
+        <button id="publier" title="Met le site public à jour avec vos dernières modifications">🚀 Publier le site</button>
+        <button id="logout">Déconnexion</button>
+      </span>
     </header>
     <nav class="tabs">
       <button data-v="reservations"><span class="i">📥</span>Demandes<span class="badge hidden" id="badge-resa"></span></button>
@@ -85,6 +88,19 @@ async function bootApp() {
   document.getElementById('logout')!.addEventListener('click', async () => {
     await supabase.auth.signOut();
     renderLogin();
+  });
+  document.getElementById('publier')!.addEventListener('click', async (e) => {
+    const btn = e.currentTarget as HTMLButtonElement;
+    btn.disabled = true;
+    btn.textContent = '⏳ Publication…';
+    const { data, error } = await supabase.functions.invoke('publier');
+    btn.disabled = false;
+    btn.textContent = '🚀 Publier le site';
+    if (error || !data?.ok) {
+      toast(`Publication impossible : ${error?.message ?? data?.error ?? 'erreur inconnue'}`, true);
+      return;
+    }
+    toast('Publication lancée ✓ — le site sera à jour dans ~3 minutes.');
   });
   root.querySelectorAll('nav.tabs button').forEach((b) =>
     b.addEventListener('click', () => setVue((b as HTMLElement).dataset.v!)));
@@ -257,8 +273,8 @@ async function vueVehicules(main: HTMLElement) {
 
   main.innerHTML = `
     <h2>Véhicules</h2>
-    <div class="note">Les modifications apparaissent sur le site après la mise à jour automatique
-      de la nuit (ou une publication manuelle).</div>
+    <div class="note">Après vos modifications, appuyez sur <b>🚀 Publier le site</b> (en haut) :
+      le site public est à jour ~3 minutes plus tard. Sinon, il se met à jour tout seul chaque nuit.</div>
     ${vehicules.map((v) => `
       <div class="card row" data-id="${v.id}" style="flex-wrap:nowrap">
         ${premierePhoto(v.id)
